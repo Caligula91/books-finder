@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <style>
+        .pill-container {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            display: flex;
+            flex-direction: row;
+            width: 80%;
+            height: 3rem;
+            box-sizing: border-box;
+        }
+        .pill-container input[type=checkbox] {
+            opacity: 0;
+            position: fixed;
+            width: 0;
+        }
+        .pill-container .option-a {
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+        }
+        .pill-container .selector:last-child {
+            border-right: 2px solid #5183f5;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        .selector {
+            font-family: "PT Sans", sans-serif;
+            letter-spacing: 1.1px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: #5183f5;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            cursor: pointer;
+            background: #e2eafd;
+            border: 2px solid #5183f5;
+            border-right: 0;
+        }
+        .selector:hover {
+            background: #b1c8fb;
+            color: #5183f5;
+        }
+
+        input[type=checkbox]:checked + label {
+            background: #5183f5;
+            color: white;
+        }
+    </style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="pill-container">
+        <input type="checkbox" id="option-a" name="selector" value="a">
+        <label class="selector option-a" for="option-a">DELFI</label>
+
+        <input type="checkbox" id="option-b" name="selector" value="b">
+        <label class="selector" for="option-b">VULKAN</label>
+
+        <input type="checkbox" id="option-c" name="selector" value="c">
+        <label class="selector" for="option-c">EVROBOOK</label> 
+        
+        <input type="checkbox" id="option-d" name="selector" value="d">
+        <label  class="selector" for="option-d">KORISNA_KNJIGA</label> 
+    </div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+footer.footer
+  //- .footer__logo
+  //-   img(src='/img/logo/main_logo.png' alt='Knjigoteka logo')
+  if (pageInfo) 
+    ul.footer__pagination
+      if (pageInfo.previousPage)      
+        li: a(href=`${pageInfo.previousPage}`) Previous  
+      if (pageInfo.currentPage)
+        li: a(href='#') #{pageInfo.currentPage} 
+      if (pageInfo.nextPage)
+        li: a(href=`${pageInfo.nextPage}`) Next 
+  ul.footer__nav
+    li: a(href='#') About me
+    li: a(href='#') Contact
+  br
+  p.footer__copyright &copy; by Mihajlo Nikolic

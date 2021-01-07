@@ -1,0 +1,41 @@
+header.header
+  nav.nav.nav--tours
+    a.nav__el(href='/') Search Books
+    form.nav__search
+      button.nav__search-btn
+        svg
+          use(xlink:href="img/icon/icons.svg#icon-search")
+      input.nav__search-input(type="text" placeholder='Book Title' value=`${(search)?search:''}`)
+  //- .header__logo
+  //-   img(src='/img/logo/main_logo.png' alt='Knjigoteka logo')
+  .nav.nav--filters
+    .nav__limit
+      label Prikazi
+      select#per_page
+        option(value='12') 12
+        option(value='24') 24
+        option(value='36') 36
+        option(value='48' selected='') 48
+    .nav__select
+      input#delfi(type='checkbox' name='delfi' value='delfi' checked='checked')
+      label(for='delfi')  DELFI
+      br
+      input#vulkan(type='checkbox' name='vulkan' value='vulkan' checked='checked')
+      label(for='vulkan')  VULKAN
+      br
+      input#Evrobook(type='checkbox' name='evrobook' value='evrobook' checked='checked')
+      label(for='evrobook')  EVROBOOK
+      br
+      input#korisna_knjiga(type='checkbox' name='korisna_knjiga' value='korisna_knjiga' checked='checked')
+      label(for='korisna_knjiga')  KORISNA KNJIGA
+      br
+      br
+  nav.nav.nav--user
+    if user
+      a.nav__el.nav__el--logout Log out
+      a.nav__el(href='/me')
+        img.nav__user-img(src=`/img/users/${user.photo}` alt=`Photo of ${user.name}`)
+        span= user.name.split(' ')[0]
+    else
+      a.nav__el(href='#') Log in
+      a.nav__el.nav__el--cta(href='#') Sign up

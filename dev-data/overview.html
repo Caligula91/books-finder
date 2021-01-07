@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- <style>
+    /* The container */
+    .nav__select {
+      height: 20px;
+    }
+    .container {
+      display: block;
+      position: relative;
+      padding-left: 35px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      font-size: 22px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    /* Hide the browser's default checkbox */
+    .container input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+    
+    /* Create a custom checkbox */
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 25px;
+      width: 25px;
+      background-color: #eee;
+    }
+    
+    /* On mouse-over, add a grey background color */
+    .container:hover input ~ .checkmark {
+      background-color: #ccc;
+    }
+    
+    /* When the checkbox is checked, add a blue background */
+    .container input:checked ~ .checkmark {
+      background-color: #2196F3;
+    }
+    
+    /* Create the checkmark/indicator (hidden when not checked) */
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+    
+    /* Show the checkmark when checked */
+    .container input:checked ~ .checkmark:after {
+      display: block;
+    }
+    
+    /* Style the checkmark/indicator */
+    .container .checkmark:after {
+      left: 9px;
+      top: 5px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 3px 3px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+    }
+    </style> -->
+  <style>
+    .nav--filters {
+      height: 100%;
+      margin-left: -10%;
+    }
+    .nav__select {
+      /* display: flex;
+      justify-content: center;
+      align-items: center; */
+      /* margin-left: -10%; */
+      height: 100%;
+      margin-top: 0.5rem;
+    }
+    .nav__limit {
+      margin-right: 25px;
+    }
+    .nav__limit label {
+      font-size: 1.4rem;
+      color: rgba(255, 255, 255, 0.767);
+      margin-right: 5px;
+    }
+    .nav__select input {
+      width: 1.4rem; /*Desired width*/
+      height: 1.4rem; /*Desired height*/
+      cursor: pointer;
+    }
+    .nav__select input:checked {
+      width: 1.3rem; /*Desired width*/
+      height: 1.3rem; /*Desired height*/
+      cursor: pointer;
+      background-color: white;
+    }
+    .nav__select label {
+      font: italic small-caps bold 12px/20px Georgia, serif;
+      color: rgba(255, 255, 255, 0.767);
+    }
+  </style>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Lato:300,300i,700"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png" />
+
+    <title>Natours | Exciting tours for adventurous people</title>
+  </head>
+  <body>
+    <header class="header">
+      <nav class="nav nav--tours">
+        <a href="#" class="nav__el">All tours</a>
+        <form class="nav__search">
+          <button class="nav__search-btn">
+            <svg>
+              <use xlink:href="img/icons.svg#icon-search"></use>
+            </svg>
+          </button>
+          <input
+            type="text"
+            placeholder="Search tours"
+            class="nav__search-input"
+          />
+        </form>
+      </nav>
+      <div class="nav nav--filters">
+        <div class="nav__limit">
+          <label>Prikazi</label>
+          <select id="per_page">
+            <option value="12">12</option>
+            <option value="24">24</option>
+            <option value="36" selected>36</option>
+            <option value="48">48</option>
+          </select>
+        </div>
+        <div class="nav__select">
+          <input type="checkbox" id="delfi" name="delfi" value="delfi" checked="checked">
+          <label for="delfi"> DELFI</label><br>
+          <input type="checkbox" id="vulkan" name="vulkan" value="vulkan" checked="checked">
+          <label for="vulkan"> VULKAN</label><br>
+          <input type="checkbox" id="Evrobook" name="Evrobook" value="evrobook" checked="checked">
+          <label for="Evrobook"> EVROBOOK</label><br>
+          <input type="checkbox" id="korisna_knjiga" name="korisna_knjiga" value="korisna_knjiga" checked="checked">
+          <label for="korisna_knjiga"> KORISNA KNJIGA</label><br><br>
+        </div>
+      </div>
+      <div class="header__logo">
+        <img src="img/logo-white.png" alt="Natours logo" />
+      </div>
+      <nav class="nav nav--user">
+        <a href="#" class="nav__el">My bookings</a>
+        <a href="#" class="nav__el">
+          <img src="img/user.jpg" alt="User photo" class="nav__user-img" />
+          <span>Jonas</span>
+        </a>
+
+        <!-- <button class="nav__el">Log in</button>
+        <button class="nav__el nav__el--cta">Sign up</button> -->
+      </nav>
+    </header>
+
+    <!-- In video, this <main> element is wrongly called: <section class="overview">. So in pug template, please use main.main instead of section.overview -->
+    <main class="main">
+      <div class="card-container">
+
+        <!-- CARD BEGIN -->
+        <div class="card">
+          <div class="card__picture">
+            <img src="../dev-data/bladerunner.jpg" alt="Tour 1" class="card__picture-img" />
+          </div>
+          <div class="card__info"> 
+            <p class="card__info-title">PRAVOSLAVNI DUH I ETIKA KAPITALIZMA PRAVOSLAVNI DUH I ETIKA KAPITALIZMA</p>
+            <p class="card__info-author">Author ipsum dolor sit amet consectetur adipisicing elit. Perferendis ipsa, consequuntur provident veritatis, odit quidem magni natus in mollitia, omnis obcaecati vel illo recusandae consectetur pariatur rem aliquid repellat doloribus!</p>
+          </div>
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th><img src="./store.svg" alt="store_icon"></th>
+                <th><img src="./internet.svg" alt="internet_icon"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><img src="../public/img/logo/delfi.png" alt="Delfi"></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/vulkan.png" alt=""></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- CARD END -->
+
+        <!-- CARD BEGIN -->
+        <div class="card">
+          <div class="card__picture">
+            <img src="../dev-data/download.jfif" alt="Tour 1" class="card__picture-img" />
+          </div>
+          <div class="card__title">
+            <h2>Book Title Book Title Book Title</h2>
+            <h3>Author Author</h3>
+          </div>
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th><img src="./store.svg" alt="store_icon"></th>
+                <th><img src="./internet.svg" alt="internet_icon"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><img src="../public/img/logo/delfi.png" alt="Delfi"></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- CARD END -->
+
+        <!-- CARD BEGIN -->
+        <div class="card">
+          <div class="card__picture">
+            <img src="../dev-data/test2.jpg" alt="Tour 1" class="card__picture-img" />
+          </div>
+          <div class="card__title">
+            <h2>Book Title Book Title Book Title</h2>
+            <h3>Author Author</h3>
+          </div>
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th><img src="./store.svg" alt="store_icon"></th>
+                <th><img src="./internet.svg" alt="internet_icon"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><img src="../public/img/logo/delfi.png" alt="Delfi"></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/vulkan.png" alt=""></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/evrobooks.png" alt=""></td>
+                <td>/</td>
+                <td>100,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/korisna_knjiga.png" alt=""></td>
+                <td>/</td>
+                <td>300,00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- CARD END -->
+
+        <!-- CARD BEGIN -->
+        <div class="card">
+          <div class="card__picture">
+            <img src="../dev-data/bladerunner.jpg" alt="Tour 1" class="card__picture-img" />
+          </div>
+          <div class="card__title">
+            <h2>Book Title Book Title Book Title</h2>
+            <h3>Author Author</h3>
+          </div>
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th><img src="./store.svg" alt="store_icon"></th>
+                <th><img src="./internet.svg" alt="internet_icon"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><img src="../public/img/logo/delfi.png" alt="Delfi"></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/vulkan.png" alt=""></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/evrobooks.png" alt=""></td>
+                <td>/</td>
+                <td>100,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/korisna_knjiga.png" alt=""></td>
+                <td>/</td>
+                <td>300,00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- CARD END -->
+
+        <!-- CARD BEGIN -->
+        <div class="card">
+          <div class="card__picture">
+            <img src="../dev-data/test.jpg" alt="Tour 1" class="card__picture-img" />
+          </div>
+          <div class="card__title">
+            <h2>Book Title Book Title Book Title</h2>
+            <h3>Author Author</h3>
+          </div>
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th><img src="./store.svg" alt="store_icon"></th>
+                <th><img src="./internet.svg" alt="internet_icon"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><img src="../public/img/logo/delfi.png" alt="Delfi"></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/vulkan.png" alt=""></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/evrobooks.png" alt=""></td>
+                <td>/</td>
+                <td>100,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/korisna_knjiga.png" alt=""></td>
+                <td>/</td>
+                <td>300,00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- CARD END -->
+
+        <!-- CARD BEGIN -->
+        <div class="card">
+          <div class="card__picture">
+            <img src="../dev-data/test2.jpg" alt="Tour 1" class="card__picture-img" />
+          </div>
+          <div class="card__title">
+            <h2>Book Title Book Title Book Title</h2>
+            <h3>Author Author</h3>
+          </div>
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th><img src="./store.svg" alt="store_icon"></th>
+                <th><img src="./internet.svg" alt="internet_icon"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><img src="../public/img/logo/delfi.png" alt="Delfi"></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/vulkan.png" alt=""></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/evrobooks.png" alt=""></td>
+                <td>/</td>
+                <td>100,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/korisna_knjiga.png" alt=""></td>
+                <td>/</td>
+                <td>300,00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- CARD END -->
+
+        <!-- CARD BEGIN -->
+        <div class="card">
+          <div class="card__picture">
+            <img src="../dev-data/test.jpg" alt="Tour 1" class="card__picture-img" />
+          </div>
+          <div class="card__title"> 
+            <h2>Book Title Book Title Book Title</h2>
+            <h3>Author Author</h3>
+          </div>
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th><img src="./store.svg" alt="store_icon"></th>
+                <th><img src="./internet.svg" alt="internet_icon"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><img src="../public/img/logo/delfi.png" alt="Delfi"></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/vulkan.png" alt=""></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/evrobooks.png" alt=""></td>
+                <td>/</td>
+                <td>100,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/korisna_knjiga.png" alt=""></td>
+                <td>/</td>
+                <td>300,00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- CARD END -->
+        <!-- CARD BEGIN -->
+        <div class="card">
+          <div class="card__picture">
+            <img src="../dev-data/test.jpg" alt="Tour 1" class="card__picture-img" />
+          </div>
+          <div class="card__title"> 
+            <h2>Book Title Book Title Book Title</h2>
+            <h3>Author Author</h3>
+          </div>
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th><img src="./store.svg" alt="store_icon"></th>
+                <th><img src="./internet.svg" alt="internet_icon"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><img src="../public/img/logo/delfi.png" alt="Delfi"></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/vulkan.png" alt=""></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/evrobooks.png" alt=""></td>
+                <td>/</td>
+                <td>100,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/korisna_knjiga.png" alt=""></td>
+                <td>/</td>
+                <td>300,00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- CARD END -->
+
+        <!-- CARD BEGIN -->
+        <div class="card">
+          <div class="card__picture">
+            <img src="../dev-data/test2.jpg" alt="Tour 1" class="card__picture-img" />
+          </div>
+          <div class="card__title"> 
+            <h2>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut assumenda officiis nihil amet doloribus itaque labore, fugiat eaque aspernatur veniam neque in sed voluptatibus. Soluta, id. Adipisci modi quibusdam saepe.</h2>
+            <h3>Author Author</h3>
+          </div>
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th><img src="./store.svg" alt="store_icon"></th>
+                <th><img src="./internet.svg" alt="internet_icon"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><img src="../public/img/logo/vulkan.png" alt=""></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- CARD END -->
+
+        <!-- CARD BEGIN -->
+        <div class="card">
+          <div class="card__picture">
+            <img src="../dev-data/test2.jpg" alt="Tour 1" class="card__picture-img" />
+          </div>
+          <div class="card__title"> 
+            <h2></h2>
+            <h3>Author Author</h3>
+          </div>
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th><img src="./store.svg" alt="store_icon"></th>
+                <th><img src="./internet.svg" alt="internet_icon"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><img src="../public/img/logo/delfi.png" alt="Delfi"></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/vulkan.png" alt=""></td>
+                <td>200</td>
+                <td>150,00</td>
+              </tr>
+              <tr>
+                <td><img src="../public/img/logo/evrobooks.png" alt=""></td>
+                <td>/</td>
+                <td>100,00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- CARD END -->
+      </div>
+    </main>
+    <div class="footer">
+      <div class="footer__logo">
+        <img src="img/logo-green.png" alt="Natours logo" />
+      </div>
+      <ul class="footer__nav">
+        <li><a href="#">About us</a></li>
+        <li><a href="#">Download apps</a></li>
+        <li><a href="#">Become a guide</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <p class="footer__copyright">
+        &copy; by Jonas Schmedtmann. All rights reserved.
+      </p>
+    </div>
+  </body>
+</html>

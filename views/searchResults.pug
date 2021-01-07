@@ -1,0 +1,34 @@
+extends base
+
+mixin result(src)
+    tr
+        td
+            a(href=`${src.url}`, target="_blank", rel="noopener noreferrer")
+                img(src=`/img/logo/${src.name.toLowerCase()}.png` alt=src)
+        td #{(src.price)?new Intl.NumberFormat('de-DE', { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(src.price):'/'}
+        td #{(src.onlinePrice)?new Intl.NumberFormat('de-DE', { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(src.onlinePrice):'/'}
+  
+block content
+    main.main
+        .card-container
+            if books.length == 0
+                h1 No Results... 
+            else
+                each book in books
+                    .card
+                        .card__picture
+                            img.card__picture-img(src=`${book.img[0]}` alt=`${book.title}`)
+                        .card__info
+                            p.card__info-title #{book.title.toUpperCase()}
+                            p.card__info-author #{book.author}
+                        table.content-table
+                            thead
+                                tr
+                                    th &nbsp;
+                                    th
+                                        img(src='/img/icon/store.svg' alt='store_icon')
+                                    th
+                                        img(src='/img/icon/internet.svg' alt='internet_icon')
+                            tbody
+                                each src in book.source
+                                    +result(src)
