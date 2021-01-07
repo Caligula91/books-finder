@@ -33,14 +33,15 @@ const getSource = (url) => {
 const isSameBook = async (url1, url2, map) => {
   const source1 = getSource(url1);
   const source2 = getSource(url2);
-  const results = await Promise.allSettled([map.get(url1), map.get(url2)]);
-  // const result1 = await map.get(url1);
-  // const result2 = await map.get(url2);
-  if (results.every((el) => el.status === 'fulfilled')) {
+  try {
+    const result1 = await map.get(url1);
+    const result2 = await map.get(url2);
     return compareBooks.secondCompare(
-      { source1, html1: results[0].value.data, url: url1 },
-      { source2, html2: results[1].value.data, url: url2 }
+      { source1, html1: result1.data, url: url1 },
+      { source2, html2: result2.data, url: url2 }
     );
+  } catch {
+    return false;
   }
 };
 
