@@ -2,6 +2,7 @@
 const axios = require('axios');
 const Book = require('../models/bookModel');
 const compareBooks = require('./compareBooks');
+const catchAsync = require('./catchAsync');
 
 const getInitBooks = (books) => {
   const returnValue = [];
@@ -42,7 +43,7 @@ const isSameBook = async (url1, url2, map) => {
 };
 
 const populateMap = (books, initialValue, map) => {
-  const timeout = 3000;
+  const timeout = 5000;
   for (let i = 0; i < books.length - 1; i++) {
     for (let j = i + 1; j < books.length; j++) {
       books[i].forEach((book1) => {
@@ -86,7 +87,7 @@ const populateMap = (books, initialValue, map) => {
   return map;
 };
 
-module.exports = async (values) => {
+module.exports = catchAsync(async (values) => {
   const { books } = values;
   let { promiseMap, initialValue } = values;
   promiseMap = promiseMap || new Map();
@@ -134,4 +135,4 @@ module.exports = async (values) => {
     books: initialValue,
     promiseMap,
   };
-};
+});
