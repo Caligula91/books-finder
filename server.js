@@ -14,9 +14,11 @@ const server = app.listen(port, () => {
 });
 
 process.on('unhandledRejection', (err) => {
-  console.log('UNHANDLED REJECTION! 💥 Shutting down...');
-  console.log(err);
-  server.close(() => {
-    process.exit(1);
-  });
+  if (!err.message.startsWith('timeout of')) {
+    console.log('UNHANDLED REJECTION! 💥 Shutting down...');
+    console.log(err.message);
+    server.close(() => {
+      process.exit(1);
+    });
+  }
 });
