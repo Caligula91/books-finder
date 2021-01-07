@@ -46,7 +46,7 @@ const isSameBook = async (url1, url2, map) => {
 };
 
 const populateMap = (books, initialValue, map) => {
-  const timeout = 5000;
+  const timeout = process.env.TIMEOUT || 10000;
   for (let i = 0; i < books.length - 1; i++) {
     for (let j = i + 1; j < books.length; j++) {
       books[i].forEach((book1) => {

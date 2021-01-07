@@ -38,7 +38,7 @@ const sendResponse = (res, data) => {
 
 // It should return promise, not results
 const getInitPromises = (search, source) => {
-  const timeout = 5000;
+  const timeout = process.env.TIMEOUT || 10000;
   switch (source) {
     case 'delfi': {
       const perPage = 50;
@@ -116,7 +116,7 @@ const getInitBooks = (result) => {
 };
 
 const getBooksPromiseByPage = (search, source, page) => {
-  const timeout = 5000;
+  const timeout = process.env.TIMEOUT || 10000;
   switch (source) {
     case 'delfi': {
       const perPage = 50;
