@@ -3,7 +3,6 @@ const axios = require('axios');
 const Book = require('../models/bookModel');
 const compareBooks = require('./compareBooks');
 
-// RETURN ARRAY WITH FINAL BOOKS
 const getInitBooks = (books) => {
   const returnValue = [];
   books.forEach((book) => {
@@ -15,8 +14,6 @@ const getInitBooks = (books) => {
   });
   return returnValue;
 };
-
-//===============================================
 
 const getSource = (url) => {
   if (url.startsWith('https://www.delfi.rs')) {
@@ -44,9 +41,7 @@ const isSameBook = async (url1, url2, map) => {
   );
 };
 
-// NOT GOOD FOR MULTI USERS
 const populateMap = (books, initialValue, map) => {
-  //if (!initialValue) map.clear();
   const timeout = 3000;
   for (let i = 0; i < books.length - 1; i++) {
     for (let j = i + 1; j < books.length; j++) {
@@ -67,7 +62,6 @@ const populateMap = (books, initialValue, map) => {
             }
           }
         });
-        // CRITICAL CODE: DUPLICATE CODE
         if (initialValue) {
           initialValue.forEach((initBook) => {
             if (compareBooks.firstCompare(book1, initBook)) {
@@ -98,17 +92,12 @@ module.exports = async (values) => {
   promiseMap = promiseMap || new Map();
   populateMap(books, initialValue, promiseMap);
   if (!initialValue) {
-    // PART TO ADD TO V1
     const index = books.findIndex((el) => el.length > 0);
     if (index === -1) return [];
     initialValue = getInitBooks(books[index]);
     books.splice(index, 1);
-    // END
   }
-  // PART TO ADD TO V1
-  let collisions = 0;
   for (let i = 0; i < books.length; i++) {
-    // END
     const sourceBooks = books[i];
     for (let j = 0; j < sourceBooks.length; j++) {
       const book = sourceBooks[j];
@@ -129,7 +118,6 @@ module.exports = async (values) => {
         ) {
           finalBook.img.push(book.img);
           finalBook.source.push(book.source);
-          collisions++;
           break;
         } else if (z === initialValue.length - 1) {
           const img = [];
@@ -142,8 +130,6 @@ module.exports = async (values) => {
       }
     }
   }
-  console.log('COLLISIONS: ', collisions);
-  // return initialValue;
   return {
     books: initialValue,
     promiseMap,

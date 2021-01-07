@@ -1,5 +1,3 @@
-const AppError = require('../utils/appError');
-
 const sendErrorProd = (err, req, res) => {
   // A) API
   if (req.originalUrl.startsWith('/api')) {
