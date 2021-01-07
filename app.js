@@ -10,7 +10,6 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const compression = require('compression');
 
-const testRouter = require('./routes/testRoutes');
 const booksRouter = require('./routes/booksRoutes');
 const viewRouter = require('./routes/viewRoutes');
 const AppError = require('./utils/appError');
@@ -74,7 +73,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use('/', viewRouter);
-app.use('/api/v1/test', testRouter);
 app.use('/api/v1/books', booksRouter);
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
