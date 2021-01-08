@@ -14,16 +14,11 @@ const server = app.listen(port, () => {
 });
 
 process.on('unhandledRejection', (err) => {
-  if (
-    !err.message.startsWith('timeout of') &&
-    !err.message.startsWith('Request failed')
-  ) {
-    console.log('UNHANDLED REJECTION! 💥 Shutting down...');
-    console.log(err.message);
-    server.close(() => {
-      process.exit(1);
-    });
-  }
+  console.log('UNHANDLED REJECTION! 💥 Shutting down...');
+  console.log(err.message);
+  server.close(() => {
+    process.exit(1);
+  });
 });
 
 process.on('SIGTERM', () => {

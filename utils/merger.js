@@ -55,13 +55,17 @@ const populateMap = (books, initialValue, map) => {
             if (!map.has(book1.source.url)) {
               map.set(
                 book1.source.url,
-                axios(encodeURI(book1.source.url), { timeout })
+                axios(encodeURI(book1.source.url), { timeout }).catch((err) =>
+                  console.log(err.message)
+                )
               );
             }
             if (!map.has(book2.source.url)) {
               map.set(
                 book2.source.url,
-                axios(encodeURI(book2.source.url), { timeout })
+                axios(encodeURI(book2.source.url), { timeout }).catch((err) =>
+                  console.log(err.message)
+                )
               );
             }
           }
@@ -72,13 +76,17 @@ const populateMap = (books, initialValue, map) => {
               if (!map.has(book1.source.url)) {
                 map.set(
                   book1.source.url,
-                  axios(encodeURI(book1.source.url), { timeout })
+                  axios(encodeURI(book1.source.url), { timeout }).catch((err) =>
+                    console.log(err.message)
+                  )
                 );
               }
               if (!map.has(initBook.source[0].url)) {
                 map.set(
                   initBook.source[0].url,
-                  axios(encodeURI(initBook.source[0].url), { timeout })
+                  axios(encodeURI(initBook.source[0].url), {
+                    timeout,
+                  }).catch((err) => console.log(err.message))
                 );
               }
             }
