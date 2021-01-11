@@ -1,14 +1,6 @@
 const HTMLParser = require('node-html-parser');
 const titleFormater = require('./titleFormater');
-
-const formatPrice = (price) => {
-  // 4.400,00 RSD
-  // 968,00 RSD
-  price = price.split(' ')[0];
-  price = price.replace('.', '').replace(',', '.');
-  price = parseFloat(price);
-  return price;
-};
+const { evrobookFormatPrices } = require('./priceFormater');
 
 exports.parseBooks = (html) => {
   const books = [];
@@ -36,7 +28,7 @@ exports.parseBooks = (html) => {
       if (salesPrice) rawPrice = salesPrice.innerText.trim();
       else if (regularPrice) rawPrice = regularPrice.innerText.trim();
       else return;
-      const price = formatPrice(rawPrice);
+      const price = evrobookFormatPrices(rawPrice);
       books.push({
         title,
         author: undefined,

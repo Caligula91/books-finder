@@ -1,12 +1,6 @@
 const HTMLParser = require('node-html-parser');
 const titleFormater = require('./titleFormater');
-
-const formatPrice = (el) => {
-  const arr = el.split(' ');
-  arr[0] = arr[0].replace('.', '').replace(',', '.');
-  const price = parseFloat(arr[0]);
-  return price;
-};
+const { korisnaKnjigaFormatPrices } = require('./priceFormater');
 
 exports.parseBooks = (html) => {
   const books = [];
@@ -17,7 +11,7 @@ exports.parseBooks = (html) => {
     knjigeHolder.forEach((item) => {
       const domPrice = item.querySelector('.override-cena');
       if (!domPrice) return;
-      const price = formatPrice(
+      const price = korisnaKnjigaFormatPrices(
         domPrice.querySelector('#kolicna').innerText.trim()
       );
       const rawTitle = item

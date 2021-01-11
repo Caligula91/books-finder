@@ -3,6 +3,7 @@ const delfiParser = require('../utils/delfiParser');
 const vulkanParser = require('../utils/vulkanParser');
 const korisnaKnjigaParser = require('../utils/korisnaKnjigaParser');
 const evrobooksParser = require('../utils/evrobookParser');
+const topBooksParser = require('../utils/topBooksParser');
 const merger = require('../utils/merger');
 const catchAsync = require('../utils/catchAsync');
 
@@ -10,7 +11,7 @@ const sources = {
   DELFI: 'delfi',
   VULKAN: 'vulkan',
   EVROBOOK: 'evrobook',
-  KORISNA_KNJIGA: 'korisna_knjiga',
+  KORISNA_KNJIGA: 'korisnaknjiga',
 };
 
 const sendResponse = (res, data) => {
@@ -57,7 +58,7 @@ const getInitPromises = (search, source) => {
         timeout,
       });
     }
-    case 'korisna_knjiga': {
+    case 'korisnaknjiga': {
       const url = `https://www.korisnaknjiga.com/pretraga-proizvoda?s=${search}&v=0&c1=&c2=&o=`;
       return axios(url, { timeout });
     }
@@ -96,7 +97,7 @@ const getInitBooks = (result) => {
     case 'www.korisnaknjiga.com': {
       const books = korisnaKnjigaParser.parseBooks(result.data);
       return {
-        source: 'korisna_knjiga',
+        source: 'korisnaknjiga',
         books,
       };
     }
@@ -412,5 +413,46 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
     books: books.slice(start, end),
     nextPage,
     previousPage: page > 1,
+  });
+});
+
+/**
+ * TOP BOOKS
+ */
+
+const getTopBooks = (() => {
+  const timeout = 5000;
+  const url = {
+    delfi: `https://www.delfi.rs/top-liste.html`,
+    vulkan: `https://www.knjizare-vulkan.rs/`,
+    evrobook: `https://evrobook.rs/`,
+    korisnaknjiga: `https://www.korisnaknjiga.com/top-lista`,
+  };
+  return async (src) => {
+    const response = await axios(url[src], { timeout });
+    if (response.status >= 300) return [];
+    const books = topBooksParser[`${src}Parser`](response.data);
+    return books;
+  };
+})();
+
+exports.getTopBooks = catchAsync(async (req, res, next) => {
+  const { select } = req.query;
+  const selectArr = select
+    ? select.split(' ').reduce((acc, cur) => {
+        if (Object.values(sources).includes(cur)) acc.push(cur);
+        return acc;
+      }, [])
+    : Object.values(sources);
+  const booksPromises = await Promise.allSettled(
+    selectArr.map((src) => getTopBooks(src))
+  );
+  const results = booksPromises.reduce((acc, curr) => {
+    if (curr.status === 'fulfilled') acc.push(curr.value);
+    return acc;
+  }, []);
+  res.status(200).json({
+    status: 'success',
+    topBooks: results,
   });
 });

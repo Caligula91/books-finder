@@ -1,24 +1,6 @@
 const HTMLParser = require('node-html-parser');
 const titleFormater = require('./titleFormater');
-
-const formatPrices = (el, discount) => {
-  const arr = el.innerText.split('din');
-  let price;
-  let onlinePrice;
-  if (arr.length > 2) {
-    price = arr[2].trim().replace('.', '').replace(',', '.');
-    if (discount) {
-      discount = parseFloat(discount.replace(/%/, ''));
-      onlinePrice = price - (price * discount) / 100;
-    }
-  } else {
-    price = arr[0].trim().replace('.', '').replace(',', '.');
-  }
-  return {
-    price: parseFloat(price),
-    onlinePrice: parseFloat(onlinePrice),
-  };
-};
+const { delfiFormatPrices } = require('./priceFormater');
 
 exports.parseBooks = (html) => {
   const books = [];
@@ -35,7 +17,7 @@ exports.parseBooks = (html) => {
       const body = el.querySelector('.body');
       const rawTitle = body.querySelector('a').getAttribute('title');
       const author = body.querySelector('p').innerText.trim();
-      const { price, onlinePrice } = formatPrices(
+      const { price, onlinePrice } = delfiFormatPrices(
         body.querySelector('.price'),
         discount
       );

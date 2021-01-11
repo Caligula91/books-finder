@@ -1,24 +1,6 @@
 const HTMLParser = require('node-html-parser');
 const titleFormater = require('./titleFormater');
-
-const formatPrices = (currentPrice, prevPrice) => {
-  // some books doesnt have price discount
-  let price = (prevPrice || currentPrice).innerText.trim();
-  price = price.replace(/(\D|',')/g, (char) => (char === ',' ? '.' : ''));
-  price = parseFloat(price);
-  let onlinePrice;
-  if (prevPrice) {
-    onlinePrice = currentPrice.innerText.trim();
-    onlinePrice = onlinePrice.replace(/(\D|',')/g, (char) =>
-      char === ',' ? '.' : ''
-    );
-    onlinePrice = parseFloat(onlinePrice);
-  }
-  return {
-    price,
-    onlinePrice,
-  };
-};
+const { vulkanFormatPrices } = require('./priceFormater');
 
 // UNFINISHED DUE TO VULKAN NOT WORKING
 exports.parseBooks = (html) => {
@@ -47,7 +29,10 @@ exports.parseBooks = (html) => {
       const prevPrice = textWrapper
         .querySelector('.prices-wrapper')
         .querySelector('.prev-price');
-      const { price, onlinePrice } = formatPrices(currentPrice, prevPrice);
+      const { price, onlinePrice } = vulkanFormatPrices(
+        currentPrice,
+        prevPrice
+      );
       books.push({
         title,
         author,
