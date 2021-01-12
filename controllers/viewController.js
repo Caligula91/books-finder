@@ -9,7 +9,7 @@ exports.getOverview = (req, res, next) => {
 
 exports.getSearchResults = catchAsync(async (req, res, next) => {
   const { search, page, limit } = req.query;
-  const select = req.query.select || 'delfi+vulkan+evrobook+korisna_knjiga';
+  const select = req.query.select || 'delfi+vulkan+evrobook+korisnaknjiga';
   const url = encodeURI(
     `${req.protocol}://${req.get(
       'host'

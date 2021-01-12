@@ -37,7 +37,7 @@ if (checkBox) {
 
 if (searchButton) {
     searchButton.addEventListener('click', event => {
-        event.preventDefault()
+        event.preventDefault();
         const input = document.querySelector('.nav__search-input').value.trim();
         const limit = (selectOptions)?document.getElementById('per_page').value:48;
         const select = (checkBox)?Array.from(checkBox.querySelectorAll('input')).reduce((acc, curr) => {
