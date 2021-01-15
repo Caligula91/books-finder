@@ -12,6 +12,7 @@ const compression = require('compression');
 
 const booksRouter = require('./routes/booksRoutes');
 const viewRouter = require('./routes/viewRoutes');
+const userRouter = require('./routes/userRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
@@ -74,6 +75,7 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use('/', viewRouter);
 app.use('/api/v1/books', booksRouter);
+app.use('/api/v1/users', userRouter);
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });

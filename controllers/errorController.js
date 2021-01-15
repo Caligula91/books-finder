@@ -1,3 +1,5 @@
+const AppError = require('../utils/appError');
+
 const sendErrorProd = (err, req, res) => {
   // A) API
   if (req.originalUrl.startsWith('/api')) {
@@ -39,6 +41,16 @@ const sendErrorDev = (err, req, res) => {
   });
 };
 
+const handleJWTError = () => {
+  return new AppError(
+    'Invalid token, try again with valid token or login again',
+    401
+  );
+};
+const handleJWTExpiredError = () => {
+  return new AppError('Token expired, please login again', 401);
+};
+
 module.exports = (err, req, res, next) => {
   // console.log(err.stack);
   err.statusCode = err.statusCode || 500;
@@ -46,7 +58,7 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
-    const error = { ...err };
+    let error = { ...err };
     error.message = err.message;
     error.status = err.status;
     error.statusCode = err.statusCode;
@@ -54,9 +66,8 @@ module.exports = (err, req, res, next) => {
     // if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     // if (error.name === 'ValidationError')
     //   error = handleValidationErrorDB(error);
-    // if (error.name === 'JsonWebTokenError') error = handleJWTError();
-    // if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
-
+    if (error.name === 'JsonWebTokenError') error = handleJWTError();
+    if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
     sendErrorProd(error, req, res);
   }
 };
