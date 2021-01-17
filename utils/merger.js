@@ -1,5 +1,5 @@
 /* eslint-disable no-plusplus */
-const axios = require('axios');
+const { set } = require('mongoose');
 const Book = require('../models/bookModel');
 const compareBooks = require('./compareBooks');
 
@@ -30,79 +30,81 @@ const getSource = (url) => {
   }
 };
 
-const isSameBook = async (url1, url2, map) => {
+const isSameBook = async (
+  url1,
+  url2,
+  requestMap,
+  urlMapDB,
+  notSameBooksMap
+) => {
+  const urlArr = urlMapDB.getArr(url1);
+  if (urlArr && urlArr.includes(url2)) {
+    return true;
+  }
   const source1 = getSource(url1);
   const source2 = getSource(url2);
   try {
-    const result1 = await map.get(url1);
-    const result2 = await map.get(url2);
-    return compareBooks.secondCompare(
+    const result1 = await requestMap.getResponse(url1);
+    const result2 = await requestMap.getResponse(url2);
+    const same = compareBooks.secondCompare(
       { source1, html1: result1.data, url: url1 },
       { source2, html2: result2.data, url: url2 }
     );
+    if (!same) {
+      console.log('adding to map');
+      notSameBooksMap.addNotSamePair(url1, url2);
+    }
+    return same;
   } catch {
     return false;
   }
 };
 
-const populateMap = (books, initialValue, map) => {
-  const timeout = process.env.TIMEOUT || 10000;
+const populateMap = (books, initialValue, requestMap, urlMapDB) => {
   for (let i = 0; i < books.length - 1; i++) {
     for (let j = i + 1; j < books.length; j++) {
       books[i].forEach((book1) => {
+        const sameBooksArr = urlMapDB.getArr(book1.source.url);
         books[j].forEach((book2) => {
+          if (
+            sameBooksArr &&
+            sameBooksArr.find((el) => el === book2.source.url)
+          ) {
+            console.log(book1.source.url, '===', book2.source.url);
+            set.add(book1.source.url);
+            set.add(book2.source.url);
+            return;
+          }
           if (compareBooks.firstCompare(book1, book2)) {
-            if (!map.has(book1.source.url)) {
-              map.set(
-                book1.source.url,
-                axios(encodeURI(book1.source.url), { timeout }).catch((err) =>
-                  console.log(err.message)
-                )
-              );
-            }
-            if (!map.has(book2.source.url)) {
-              map.set(
-                book2.source.url,
-                axios(encodeURI(book2.source.url), { timeout }).catch((err) =>
-                  console.log(err.message)
-                )
-              );
-            }
+            console.log(book1.source.url, '=', book2.source.url);
+            requestMap.addGetRequest(book1.source.url);
+            requestMap.addGetRequest(book2.source.url);
           }
         });
         if (initialValue) {
           initialValue.forEach((initBook) => {
+            if (
+              sameBooksArr &&
+              sameBooksArr.find((el) => el === initBook.source[0].url)
+            ) {
+              return;
+            }
+
             if (compareBooks.firstCompare(book1, initBook)) {
-              if (!map.has(book1.source.url)) {
-                map.set(
-                  book1.source.url,
-                  axios(encodeURI(book1.source.url), { timeout }).catch((err) =>
-                    console.log(err.message)
-                  )
-                );
-              }
-              if (!map.has(initBook.source[0].url)) {
-                map.set(
-                  initBook.source[0].url,
-                  axios(encodeURI(initBook.source[0].url), {
-                    timeout,
-                  }).catch((err) => console.log(err.message))
-                );
-              }
+              requestMap.addGetRequest(book1.source.url);
+              requestMap.addGetRequest(initBook.source[0].url);
             }
           });
         }
       });
     }
   }
-  return map;
 };
 
 module.exports = async (values) => {
-  const { books } = values;
-  let { promiseMap, initialValue } = values;
-  promiseMap = promiseMap || new Map();
-  populateMap(books, initialValue, promiseMap);
+  const { books, urlMapDB, requestMap } = values;
+  let { initialValue } = values;
+  populateMap(books, initialValue, requestMap, urlMapDB);
   if (!initialValue) {
     const index = books.findIndex((el) => el.length > 0);
     if (index === -1) return [];
@@ -125,7 +127,9 @@ module.exports = async (values) => {
           (await isSameBook(
             book.source.url,
             finalBook.source[0].url,
-            promiseMap
+            requestMap,
+            urlMapDB,
+            values.notSameBooksMap
           ))
         ) {
           finalBook.img.push(book.img);
@@ -142,8 +146,6 @@ module.exports = async (values) => {
       }
     }
   }
-  return {
-    books: initialValue,
-    promiseMap,
-  };
+  console.log(values.notSameBooksMap.getMap());
+  return initialValue;
 };

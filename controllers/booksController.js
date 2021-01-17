@@ -6,6 +6,10 @@ const evrobooksParser = require('../utils/evrobookParser');
 const topBooksParser = require('../utils/topBooksParser');
 const merger = require('../utils/merger');
 const catchAsync = require('../utils/catchAsync');
+const UrlMapDB = require('../utils/urlMapDB');
+const RequestMap = require('../utils/requestMap');
+const updateDB = require('../utils/updateDB');
+const NotSameBooksMap = require('../utils/notSameBooksMap');
 
 const sources = {
   DELFI: 'delfi',
@@ -306,7 +310,32 @@ exports.getEvrobooks = async (req, res, next) => {
     },
   });
 };
-
+/**
+ * GET ALL BOOKS UTILS
+ */
+const getUrlMap = (books) => {
+  const urlMap = new Map();
+  books.forEach((book) => {
+    if (book.source.length > 1) {
+      const urls = book.source.map((src) => src.url);
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < urls.length; i++) {
+        urlMap.set(urls[i], []);
+        const value = urlMap.get(urls[i]);
+        // eslint-disable-next-line no-plusplus
+        for (let j = 0; j < urls.length; j++) {
+          if (i !== j) {
+            value.push(urls[j]);
+          }
+        }
+      }
+    }
+  });
+  return urlMap;
+};
+/**
+ * ALL BOOKS
+ */
 exports.getAllBooks = catchAsync(async (req, res, next) => {
   const { select } = req.query;
   const search = encodeURI(req.query.search);
@@ -353,9 +382,19 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
   // OUTPUT => [ [ Book ], [ Book ]... ]
   const isEmpty = forMerging.every((books) => books.length === 0);
   if (isEmpty) return sendResponse(res);
+  // GET URL MAP FROM DB
+  const urlMapDB = new UrlMapDB();
+  await urlMapDB.populateMap(forMerging);
+  // REQUEST MAP
+  const requestMap = new RequestMap();
+  // NOT SAME MAP
+  const notSameBooksMap = new NotSameBooksMap();
   // eslint-disable-next-line prefer-const
-  let { books, promiseMap } = await merger({
+  let books = await merger({
     books: forMerging,
+    urlMapDB,
+    requestMap,
+    notSameBooksMap,
   });
   // ADD SITUATION WHEN THERE IS NO NEXT PAGE BASED ON RECORDS FROM books
   // eslint-disable-next-line no-plusplus
@@ -399,15 +438,30 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
       forMergingPage.push(el.slice(0, perVirtualPage))
     );
     // eslint-disable-next-line no-await-in-loop
-    ({ books, promiseMap } = await merger({
+    await urlMapDB.populateMap(forMergingPage);
+    // eslint-disable-next-line no-await-in-loop
+    books = await merger({
       books: forMergingPage,
       initialValue: books,
-      promiseMap,
-    }));
+      urlMapDB,
+      requestMap,
+      notSameBooksMap,
+    });
   }
   const nextPage = books.length > recordsCap;
   const start = skip;
   const end = limit + skip;
+  const updateDBInfo = await updateDB(
+    getUrlMap(books),
+    notSameBooksMap.getMap()
+  );
+  //console.log(updateDBInfo);
+  console.log('REQUEST_MAP SIZE: ', requestMap.getMap().size);
+  console.log('URL_MAP_DB SIZE:', urlMapDB.getMap().size);
+  console.log('NOT_SAME_BOOKS', notSameBooksMap.getMap());
+  requestMap.clearMap();
+  urlMapDB.clearMap();
+  notSameBooksMap.clearMap();
   sendResponse(res, {
     page,
     books: books.slice(start, end),
@@ -419,7 +473,6 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
 /**
  * TOP BOOKS
  */
-
 const getTopBooks = (() => {
   const timeout = 5000;
   const url = {
