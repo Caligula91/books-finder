@@ -36,8 +36,8 @@ const isSameBook = async (url1, url2, requestMap) => {
     const result1 = await requestMap.getResponse(url1);
     const result2 = await requestMap.getResponse(url2);
     const same = compareBooks.secondCompare(
-      { source1, html1: result1.data, url: url1 },
-      { source2, html2: result2.data, url: url2 }
+      { source1, html1: result1.data, url1 },
+      { source2, html2: result2.data, url2 }
     );
     return same;
   } catch {
@@ -107,8 +107,13 @@ module.exports = async (values) => {
         );
         const urlArr = urlMapDB.getArr(book.source.url);
         const sameBook = urlArr && urlArr.includes(finalBook.source[0].url);
+        const passedFirstCompare = notSameBooksMap.passedFirstCompare(
+          book.source.url,
+          finalBook.source[0].url
+        );
         if (
           !sameSource &&
+          passedFirstCompare &&
           (sameBook ||
             // eslint-disable-next-line no-await-in-loop
             (await isSameBook(

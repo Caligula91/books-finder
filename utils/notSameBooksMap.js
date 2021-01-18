@@ -25,4 +25,10 @@ module.exports = class {
   clearMap() {
     this.map.clear();
   }
+
+  passedFirstCompare(url1, url2) {
+    const value = this.map.get(url1);
+    if (!value) return false;
+    return value.has(url2);
+  }
 };

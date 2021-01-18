@@ -5,10 +5,8 @@ const modifyNotSameMap = (sameMap, notSameMap) => {
   notSameMap.forEach((value, key) => {
     const sameSet = sameMap.get(key);
     if (sameSet) {
-      const difference = new Set(
-        [...value].filter((el) => !sameSet.includes(el))
-      );
-      if (difference.size !== 0) notSameMap.set(key, difference);
+      sameSet.forEach((el) => value.delete(el));
+      if (value.size === 0) notSameMap.delete(key);
     }
   });
 };
