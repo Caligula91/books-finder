@@ -1,5 +1,4 @@
 /* eslint-disable no-plusplus */
-const { set } = require('mongoose');
 const Book = require('../models/bookModel');
 const compareBooks = require('./compareBooks');
 
@@ -30,17 +29,7 @@ const getSource = (url) => {
   }
 };
 
-const isSameBook = async (
-  url1,
-  url2,
-  requestMap,
-  urlMapDB,
-  notSameBooksMap
-) => {
-  const urlArr = urlMapDB.getArr(url1);
-  if (urlArr && urlArr.includes(url2)) {
-    return true;
-  }
+const isSameBook = async (url1, url2, requestMap) => {
   const source1 = getSource(url1);
   const source2 = getSource(url2);
   try {
@@ -50,61 +39,57 @@ const isSameBook = async (
       { source1, html1: result1.data, url: url1 },
       { source2, html2: result2.data, url: url2 }
     );
-    if (!same) {
-      console.log('adding to map');
-      notSameBooksMap.addNotSamePair(url1, url2);
-    }
     return same;
   } catch {
     return false;
   }
 };
 
-const populateMap = (books, initialValue, requestMap, urlMapDB) => {
+const populateMap = (
+  books,
+  initialValue,
+  requestMap,
+  urlMapDB,
+  notSameBooksMap
+) => {
+  if (initialValue) books.push(initialValue);
+  const ingoreSet = new Set();
   for (let i = 0; i < books.length - 1; i++) {
     for (let j = i + 1; j < books.length; j++) {
+      // restart set of ignoring books
+      ingoreSet.clear();
       books[i].forEach((book1) => {
         const sameBooksArr = urlMapDB.getArr(book1.source.url);
         books[j].forEach((book2) => {
-          if (
-            sameBooksArr &&
-            sameBooksArr.find((el) => el === book2.source.url)
-          ) {
-            console.log(book1.source.url, '===', book2.source.url);
-            set.add(book1.source.url);
-            set.add(book2.source.url);
+          const url1 = book1.source.url;
+          const url2 =
+            j === books.length - 1 && initialValue
+              ? book2.source[0].url
+              : book2.source.url;
+          if (ingoreSet.has(url1) || ingoreSet.has(url2)) {
+            return;
+          }
+          if (sameBooksArr && sameBooksArr.find((el) => el === url2)) {
+            ingoreSet.add(url2);
+            ingoreSet.add(url1);
             return;
           }
           if (compareBooks.firstCompare(book1, book2)) {
-            console.log(book1.source.url, '=', book2.source.url);
-            requestMap.addGetRequest(book1.source.url);
-            requestMap.addGetRequest(book2.source.url);
+            requestMap.addGetRequest(url1);
+            requestMap.addGetRequest(url2);
+            notSameBooksMap.addNotSamePair(url1, url2);
           }
         });
-        if (initialValue) {
-          initialValue.forEach((initBook) => {
-            if (
-              sameBooksArr &&
-              sameBooksArr.find((el) => el === initBook.source[0].url)
-            ) {
-              return;
-            }
-
-            if (compareBooks.firstCompare(book1, initBook)) {
-              requestMap.addGetRequest(book1.source.url);
-              requestMap.addGetRequest(initBook.source[0].url);
-            }
-          });
-        }
       });
     }
   }
+  if (initialValue) books.pop();
 };
 
 module.exports = async (values) => {
-  const { books, urlMapDB, requestMap } = values;
+  const { books, urlMapDB, requestMap, notSameBooksMap } = values;
   let { initialValue } = values;
-  populateMap(books, initialValue, requestMap, urlMapDB);
+  populateMap(books, initialValue, requestMap, urlMapDB, notSameBooksMap);
   if (!initialValue) {
     const index = books.findIndex((el) => el.length > 0);
     if (index === -1) return [];
@@ -120,17 +105,17 @@ module.exports = async (values) => {
         const sameSource = finalBook.source.find(
           (el) => el.name === book.source.name
         );
+        const urlArr = urlMapDB.getArr(book.source.url);
+        const sameBook = urlArr && urlArr.includes(finalBook.source[0].url);
         if (
           !sameSource &&
-          compareBooks.firstCompare(book, finalBook) &&
-          // eslint-disable-next-line no-await-in-loop
-          (await isSameBook(
-            book.source.url,
-            finalBook.source[0].url,
-            requestMap,
-            urlMapDB,
-            values.notSameBooksMap
-          ))
+          (sameBook ||
+            // eslint-disable-next-line no-await-in-loop
+            (await isSameBook(
+              book.source.url,
+              finalBook.source[0].url,
+              requestMap
+            )))
         ) {
           finalBook.img.push(book.img);
           finalBook.source.push(book.source);
@@ -146,6 +131,5 @@ module.exports = async (values) => {
       }
     }
   }
-  console.log(values.notSameBooksMap.getMap());
   return initialValue;
 };

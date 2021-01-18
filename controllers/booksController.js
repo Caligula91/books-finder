@@ -458,7 +458,7 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
   //console.log(updateDBInfo);
   console.log('REQUEST_MAP SIZE: ', requestMap.getMap().size);
   console.log('URL_MAP_DB SIZE:', urlMapDB.getMap().size);
-  console.log('NOT_SAME_BOOKS', notSameBooksMap.getMap());
+  console.log('NOT_SAME_BOOKS', notSameBooksMap.getMap().size);
   requestMap.clearMap();
   urlMapDB.clearMap();
   notSameBooksMap.clearMap();

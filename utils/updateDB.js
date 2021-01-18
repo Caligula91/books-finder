@@ -1,4 +1,17 @@
-const BookUrlMap = require('../models/bookUrlMap');
+const modifyNotSameMap = (sameMap, notSameMap) => {
+  console.log(sameMap);
+  console.log('========================');
+  console.log(notSameMap);
+  notSameMap.forEach((value, key) => {
+    const sameSet = sameMap.get(key);
+    if (sameSet) {
+      const difference = new Set(
+        [...value].filter((el) => !sameSet.includes(el))
+      );
+      if (difference.size !== 0) notSameMap.set(key, difference);
+    }
+  });
+};
 
 module.exports = async (urlMap, notSameMap) => {
   const commandsArr = [];
@@ -13,6 +26,9 @@ module.exports = async (urlMap, notSameMap) => {
       },
     });
   });
+  modifyNotSameMap(urlMap, notSameMap);
+  console.log('=======================');
+  console.log(notSameMap);
   notSameMap.forEach((value, key) => {
     commandsArr.push({
       updateOne: {
@@ -24,6 +40,6 @@ module.exports = async (urlMap, notSameMap) => {
       },
     });
   });
-  const bulkWriterResults = await BookUrlMap.bulkWrite(commandsArr);
-  return bulkWriterResults;
+  //const bulkWriterResults = await BookUrlMap.bulkWrite(commandsArr);
+  //return bulkWriterResults;
 };
