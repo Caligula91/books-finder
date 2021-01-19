@@ -14,6 +14,7 @@ module.exports = class {
       url,
       axios(encodeURI(url), { timeout }).catch((err) => {
         this.failedRequest.add(url);
+        // eslint-disable-next-line no-console
         console.log(err.message, url);
       })
     );

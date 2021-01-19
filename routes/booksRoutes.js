@@ -3,7 +3,6 @@ const booksController = require('../controllers/booksController');
 
 const router = express.Router();
 
-// /api/v1/books?search=hari+poter
 router.route('/').get(booksController.getAllBooks);
 router.route('/top-books').get(booksController.getTopBooks);
 router.route('/delfi').get(booksController.getDelfiBooks);

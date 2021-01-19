@@ -20,24 +20,25 @@ const getUrlMap = (books) => {
   return urlMap;
 };
 
-const modifyNotSameMap = (sameMap, notSameMap, requestMap) => {
-  notSameMap.forEach((value, key) => {
+const getNotSameMap = (sameMap, potentialSameBooks, requestMap) => {
+  potentialSameBooks.forEach((value, key) => {
     value.forEach((el) => {
       if (requestMap.getFailedRequestsSet().has(el)) value.delete(el);
     });
     if (value.size === 0) {
-      notSameMap.delete(key);
+      potentialSameBooks.delete(key);
       return;
     }
     const sameSet = sameMap.get(key);
     if (sameSet) {
       sameSet.forEach((el) => value.delete(el));
-      if (value.size === 0) notSameMap.delete(key);
+      if (value.size === 0) potentialSameBooks.delete(key);
     }
   });
+  return potentialSameBooks;
 };
 
-module.exports = async (books, notSameMap, requestMap) => {
+module.exports = async (books, potentialSameBooks, requestMap) => {
   const urlMap = getUrlMap(books);
   const commandsArr = [];
   urlMap.forEach((value, key) => {
@@ -51,7 +52,7 @@ module.exports = async (books, notSameMap, requestMap) => {
       },
     });
   });
-  modifyNotSameMap(urlMap, notSameMap, requestMap);
+  const notSameMap = getNotSameMap(urlMap, potentialSameBooks, requestMap);
   notSameMap.forEach((value, key) => {
     commandsArr.push({
       updateOne: {
