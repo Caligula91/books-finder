@@ -17,20 +17,21 @@ module.exports = class {
     //3. Populate Map with url as key, and sameBooks array as value
     //4. Populate Map with url as key, and notSameBooks array as value
     bookUrlMapArr.forEach((el) => {
-      this.sameBooksMap.set(el.url, el.sameBooks);
-      this.notSameBooksMap.set(el.url, el.notSameBooks);
+      if (el.sameBooks.length > 0) this.sameBooksMap.set(el.url, el.sameBooks);
+      if (el.notSameBooks.length > 0)
+        this.notSameBooksMap.set(el.url, el.notSameBooks);
     });
   }
 
   getSameUrl(url) {
-    this.sameBooksMap.get(url);
+    return this.sameBooksMap.get(url);
   }
 
   getNotSameUrl(url) {
-    this.notSameBooksMap.get(url);
+    return this.notSameBooksMap.get(url);
   }
 
-  clearMap() {
+  clearMaps() {
     this.sameBooksMap.clear();
     this.notSameBooksMap.clear();
   }

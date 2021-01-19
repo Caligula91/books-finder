@@ -446,10 +446,10 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
   const start = skip;
   const end = limit + skip;
   const updateDBInfo = await updateDB(
-    getUrlMap(books),
-    potentialSameBooksMap.getMap()
+    books,
+    potentialSameBooksMap.getMap(),
+    requestMap
   );
-  //console.log(updateDBInfo);
   console.log('REQUEST_MAP: ', requestMap.getMap().size);
   console.log('SAME_BOOKS_MAP:', urlMapDB.getMaps().sameBooksMap.size);
   console.log('NOT_SAME_BOOKS_MAP:', urlMapDB.getMaps().notSameBooksMap.size);

@@ -1,3 +1,4 @@
+/* eslint-disable no-continue */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
 const Book = require('../models/bookModel');
@@ -60,10 +61,15 @@ const populateMap = (
       // restart set of ignoring books
       ingoreSet.clear();
       books[i].forEach((book1) => {
+        const url1 = book1.source.url;
         const sameBooksArr = urlMapDB.getSameUrl(book1.source.url);
         const notSameBooksArr = urlMapDB.getNotSameUrl(book1.source.url);
         books[j].forEach((book2) => {
-          const url1 = book1.source.url;
+          const sameSource =
+            initialValue && j === books.length - 1
+              ? book2.source.find((el) => el.name === book1.source.name)
+              : undefined;
+          if (sameSource) return;
           const url2 =
             j === books.length - 1 && initialValue
               ? book2.source[0].url
@@ -90,6 +96,18 @@ const populateMap = (
   if (initialValue) books.pop();
 };
 
+const pushNewBook = (finalBooks, book) => {
+  const img = [];
+  img.push(book.img);
+  const source = [];
+  source.push(book.source);
+  finalBooks.push(new Book(book, img, source));
+};
+const pushSameBook = (finalBook, book) => {
+  finalBook.img.push(book.img);
+  finalBook.source.push(book.source);
+};
+
 module.exports = async (values) => {
   const { books, urlMapDB, requestMap, potentialSameBooksMap } = values;
   let { initialValue } = values;
@@ -104,36 +122,46 @@ module.exports = async (values) => {
     const sourceBooks = books[i];
     for (let j = 0; j < sourceBooks.length; j++) {
       const book = sourceBooks[j];
+      const url1 = book.source.url;
+      const sameBooksArr = urlMapDB.getSameUrl(url1);
+      const notSameBooksArr = urlMapDB.getNotSameUrl(url1);
       for (let z = 0; z < initialValue.length; z++) {
         const finalBook = initialValue[z];
+        const url2 = finalBook.source[0].url;
+        // Check if there is already book.source in finalBooks.source. If there is, skip that final book
         const sameSource = finalBook.source.find(
           (el) => el.name === book.source.name
         );
-        const urlArr = urlMapDB.getSameUrl(book.source.url);
-        const sameBook = urlArr && urlArr.includes(finalBook.source[0].url);
-        const passedFirstCompare = potentialSameBooksMap.passedFirstCompare(
-          book.source.url,
-          finalBook.source[0].url
-        );
-        if (
-          !sameSource &&
-          passedFirstCompare &&
-          (sameBook ||
-            (await isSameBook(
-              book.source.url,
-              finalBook.source[0].url,
-              requestMap
-            )))
-        ) {
-          finalBook.img.push(book.img);
-          finalBook.source.push(book.source);
+        if (sameSource) {
+          if (z === initialValue.length - 1) {
+            pushNewBook(initialValue, book);
+            break;
+          }
+          continue;
+        }
+        const sameBook = sameBooksArr && sameBooksArr.includes(url2);
+        if (sameBook) {
+          pushSameBook(finalBook, book);
           break;
-        } else if (z === initialValue.length - 1) {
-          const img = [];
-          img.push(book.img);
-          const source = [];
-          source.push(book.source);
-          initialValue.push(new Book(book, img, source));
+        }
+        const notSameBook = notSameBooksArr && notSameBooksArr.includes(url2);
+        if (notSameBook) {
+          if (z === initialValue.length - 1) {
+            pushNewBook(initialValue, book);
+            break;
+          }
+          continue;
+        }
+        const passedFirstCompare = potentialSameBooksMap.passedFirstCompare(
+          url1,
+          url2
+        );
+        if (passedFirstCompare && (await isSameBook(url1, url2, requestMap))) {
+          pushSameBook(finalBook, book);
+          break;
+        }
+        if (z === initialValue.length - 1) {
+          pushNewBook(initialValue, book);
           break;
         }
       }

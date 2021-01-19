@@ -1,8 +1,34 @@
-const modifyNotSameMap = (sameMap, notSameMap) => {
-  console.log(sameMap);
-  console.log('========================');
-  console.log(notSameMap);
+/* eslint-disable no-plusplus */
+const BookUrlMap = require('../models/bookUrlMap');
+
+const getUrlMap = (books) => {
+  const urlMap = new Map();
+  books.forEach((book) => {
+    if (book.source.length > 1) {
+      const urls = book.source.map((src) => src.url);
+      for (let i = 0; i < urls.length; i++) {
+        urlMap.set(urls[i], []);
+        const value = urlMap.get(urls[i]);
+        for (let j = 0; j < urls.length; j++) {
+          if (i !== j) {
+            value.push(urls[j]);
+          }
+        }
+      }
+    }
+  });
+  return urlMap;
+};
+
+const modifyNotSameMap = (sameMap, notSameMap, requestMap) => {
   notSameMap.forEach((value, key) => {
+    value.forEach((el) => {
+      if (requestMap.getFailedRequestsSet().has(el)) value.delete(el);
+    });
+    if (value.size === 0) {
+      notSameMap.delete(key);
+      return;
+    }
     const sameSet = sameMap.get(key);
     if (sameSet) {
       sameSet.forEach((el) => value.delete(el));
@@ -11,7 +37,8 @@ const modifyNotSameMap = (sameMap, notSameMap) => {
   });
 };
 
-module.exports = async (urlMap, notSameMap) => {
+module.exports = async (books, notSameMap, requestMap) => {
+  const urlMap = getUrlMap(books);
   const commandsArr = [];
   urlMap.forEach((value, key) => {
     commandsArr.push({
@@ -24,9 +51,7 @@ module.exports = async (urlMap, notSameMap) => {
       },
     });
   });
-  modifyNotSameMap(urlMap, notSameMap);
-  console.log('=======================');
-  console.log(notSameMap);
+  modifyNotSameMap(urlMap, notSameMap, requestMap);
   notSameMap.forEach((value, key) => {
     commandsArr.push({
       updateOne: {
@@ -38,6 +63,7 @@ module.exports = async (urlMap, notSameMap) => {
       },
     });
   });
-  //const bulkWriterResults = await BookUrlMap.bulkWrite(commandsArr);
-  //return bulkWriterResults;
+  // NOT OTPIMISED (REMOVE UNNECECERY COMMANDS)
+  const bulkWriterResults = await BookUrlMap.bulkWrite(commandsArr);
+  return bulkWriterResults;
 };
