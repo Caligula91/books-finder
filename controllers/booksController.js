@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-plusplus */
 const axios = require('axios');
 const delfiParser = require('../utils/delfiParser');
 const vulkanParser = require('../utils/vulkanParser');
@@ -8,8 +10,8 @@ const merger = require('../utils/merger');
 const catchAsync = require('../utils/catchAsync');
 const UrlMapDB = require('../utils/urlMapDB');
 const RequestMap = require('../utils/requestMap');
+const PotentialSameBooksMap = require('../utils/potentialSameBooksMap');
 const updateDB = require('../utils/updateDB');
-const NotSameBooksMap = require('../utils/notSameBooksMap');
 
 const sources = {
   DELFI: 'delfi',
@@ -355,7 +357,6 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
   const initResultPromises = selectArr.map((src) =>
     getInitPromises(search, src)
   );
-  //const initResults = await Promise.all(initResultPromises);
   const initResults = await Promise.allSettled(initResultPromises);
   const initBooks = [];
   const initBooksNoPage = [];
@@ -382,22 +383,21 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
   // OUTPUT => [ [ Book ], [ Book ]... ]
   const isEmpty = forMerging.every((books) => books.length === 0);
   if (isEmpty) return sendResponse(res);
-  // GET URL MAP FROM DB
+
+  // INSTANTIATE --BEGIN--
   const urlMapDB = new UrlMapDB();
-  await urlMapDB.populateMap(forMerging);
-  // REQUEST MAP
   const requestMap = new RequestMap();
-  // NOT SAME MAP
-  const notSameBooksMap = new NotSameBooksMap();
-  // eslint-disable-next-line prefer-const
+  const potentialSameBooksMap = new PotentialSameBooksMap();
+  await urlMapDB.populateMaps(forMerging);
+  // INSTANTIATE --END--
+
   let books = await merger({
     books: forMerging,
     urlMapDB,
     requestMap,
-    notSameBooksMap,
+    potentialSameBooksMap,
   });
   // ADD SITUATION WHEN THERE IS NO NEXT PAGE BASED ON RECORDS FROM books
-  // eslint-disable-next-line no-plusplus
   for (let i = 2; books.length <= recordsCap; i++) {
     const nextPageResultPromises = [];
     numPages.forEach((src) => {
@@ -411,16 +411,12 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
     let nextBooksResults;
     const nextBooks = [];
     if (nextPageResultPromises.length > 0) {
-      // eslint-disable-next-line no-await-in-loop
       nextBooksResults = await Promise.allSettled(nextPageResultPromises);
-      //nextBooksResults = await Promise.all(nextPageResultPromises);
       nextBooksResults.forEach((bookRes) => {
         if (bookRes.status === 'fulfilled') {
           nextBooks.push(getBooksByPage(bookRes.value));
         }
       });
-      //nextBooks = nextBooksResults.map((result) => getBooksByPage(result));
-      // [ [books], [books]... ]
     }
     const nextBooksNoPages = [];
     initBooksNoPage.forEach((el) => {
@@ -437,15 +433,13 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
     nextBooksNoPages.forEach((el) =>
       forMergingPage.push(el.slice(0, perVirtualPage))
     );
-    // eslint-disable-next-line no-await-in-loop
-    await urlMapDB.populateMap(forMergingPage);
-    // eslint-disable-next-line no-await-in-loop
+    await urlMapDB.populateMaps(forMergingPage);
     books = await merger({
       books: forMergingPage,
       initialValue: books,
       urlMapDB,
       requestMap,
-      notSameBooksMap,
+      potentialSameBooksMap,
     });
   }
   const nextPage = books.length > recordsCap;
@@ -453,15 +447,13 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
   const end = limit + skip;
   const updateDBInfo = await updateDB(
     getUrlMap(books),
-    notSameBooksMap.getMap()
+    potentialSameBooksMap.getMap()
   );
   //console.log(updateDBInfo);
-  console.log('REQUEST_MAP SIZE: ', requestMap.getMap().size);
-  console.log('URL_MAP_DB SIZE:', urlMapDB.getMap().size);
-  console.log('NOT_SAME_BOOKS', notSameBooksMap.getMap().size);
-  requestMap.clearMap();
-  urlMapDB.clearMap();
-  notSameBooksMap.clearMap();
+  console.log('REQUEST_MAP: ', requestMap.getMap().size);
+  console.log('SAME_BOOKS_MAP:', urlMapDB.getMaps().sameBooksMap.size);
+  console.log('NOT_SAME_BOOKS_MAP:', urlMapDB.getMaps().notSameBooksMap.size);
+  console.log('POTENTIAL_MAP', potentialSameBooksMap.getMap().size);
   sendResponse(res, {
     page,
     books: books.slice(start, end),

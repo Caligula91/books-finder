@@ -3,7 +3,7 @@ module.exports = class {
     this.map = new Map();
   }
 
-  addNotSamePair(url1, url2) {
+  addUrlPair(url1, url2) {
     const value1 = this.map.get(url1);
     const value2 = this.map.get(url2);
     if (value1) {

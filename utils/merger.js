@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
 const Book = require('../models/bookModel');
 const compareBooks = require('./compareBooks');
@@ -50,7 +51,7 @@ const populateMap = (
   initialValue,
   requestMap,
   urlMapDB,
-  notSameBooksMap
+  potentialSameBooksMap
 ) => {
   if (initialValue) books.push(initialValue);
   const ingoreSet = new Set();
@@ -59,7 +60,8 @@ const populateMap = (
       // restart set of ignoring books
       ingoreSet.clear();
       books[i].forEach((book1) => {
-        const sameBooksArr = urlMapDB.getArr(book1.source.url);
+        const sameBooksArr = urlMapDB.getSameUrl(book1.source.url);
+        const notSameBooksArr = urlMapDB.getNotSameUrl(book1.source.url);
         books[j].forEach((book2) => {
           const url1 = book1.source.url;
           const url2 =
@@ -74,10 +76,12 @@ const populateMap = (
             ingoreSet.add(url1);
             return;
           }
+          if (notSameBooksArr && notSameBooksArr.find((el) => el === url2))
+            return;
           if (compareBooks.firstCompare(book1, book2)) {
             requestMap.addGetRequest(url1);
             requestMap.addGetRequest(url2);
-            notSameBooksMap.addNotSamePair(url1, url2);
+            potentialSameBooksMap.addUrlPair(url1, url2);
           }
         });
       });
@@ -87,9 +91,9 @@ const populateMap = (
 };
 
 module.exports = async (values) => {
-  const { books, urlMapDB, requestMap, notSameBooksMap } = values;
+  const { books, urlMapDB, requestMap, potentialSameBooksMap } = values;
   let { initialValue } = values;
-  populateMap(books, initialValue, requestMap, urlMapDB, notSameBooksMap);
+  populateMap(books, initialValue, requestMap, urlMapDB, potentialSameBooksMap);
   if (!initialValue) {
     const index = books.findIndex((el) => el.length > 0);
     if (index === -1) return [];
@@ -105,9 +109,9 @@ module.exports = async (values) => {
         const sameSource = finalBook.source.find(
           (el) => el.name === book.source.name
         );
-        const urlArr = urlMapDB.getArr(book.source.url);
+        const urlArr = urlMapDB.getSameUrl(book.source.url);
         const sameBook = urlArr && urlArr.includes(finalBook.source[0].url);
-        const passedFirstCompare = notSameBooksMap.passedFirstCompare(
+        const passedFirstCompare = potentialSameBooksMap.passedFirstCompare(
           book.source.url,
           finalBook.source[0].url
         );
@@ -115,7 +119,6 @@ module.exports = async (values) => {
           !sameSource &&
           passedFirstCompare &&
           (sameBook ||
-            // eslint-disable-next-line no-await-in-loop
             (await isSameBook(
               book.source.url,
               finalBook.source[0].url,

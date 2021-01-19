@@ -2,31 +2,43 @@ const BookUrlMap = require('../models/bookUrlMap');
 
 module.exports = class {
   constructor() {
-    this.map = new Map();
+    this.sameBooksMap = new Map();
+    this.notSameBooksMap = new Map();
   }
 
-  async populateMap(allBooks) {
+  async populateMaps(allBooks) {
     // allBooks = [[book, book, book...], [book, book, book]...]
+    // 1. Get all url from allBooks [url, url...]
     const urlArr = allBooks
       .map((books) => books.map((book) => book.source.url))
       .reduce((acc, curr) => acc.concat(curr));
+    //2. Fetch all documents with url [doc, doc...]
     const bookUrlMapArr = await BookUrlMap.find({ url: { $in: urlArr } });
-    const urlHashMap = bookUrlMapArr.reduce((acc, curr) => {
-      acc.set(curr.url, curr.sameBooks);
-      return acc;
-    }, this.map);
-    return urlHashMap;
+    //3. Populate Map with url as key, and sameBooks array as value
+    //4. Populate Map with url as key, and notSameBooks array as value
+    bookUrlMapArr.forEach((el) => {
+      this.sameBooksMap.set(el.url, el.sameBooks);
+      this.notSameBooksMap.set(el.url, el.notSameBooks);
+    });
   }
 
-  getArr(url) {
-    return this.map.get(url);
+  getSameUrl(url) {
+    this.sameBooksMap.get(url);
+  }
+
+  getNotSameUrl(url) {
+    this.notSameBooksMap.get(url);
   }
 
   clearMap() {
-    this.map.clear();
+    this.sameBooksMap.clear();
+    this.notSameBooksMap.clear();
   }
 
-  getMap() {
-    return this.map;
+  getMaps() {
+    return {
+      sameBooksMap: this.sameBooksMap,
+      notSameBooksMap: this.notSameBooksMap,
+    };
   }
 };
