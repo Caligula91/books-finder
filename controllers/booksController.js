@@ -388,7 +388,7 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
   const urlMapDB = new UrlMapDB();
   const requestMap = new RequestMap();
   const potentialSameBooksMap = new PotentialSameBooksMap();
-  await urlMapDB.populateMaps(forMerging);
+  if (process.env.DB_SUPPORT) await urlMapDB.populateMaps(forMerging);
   // INSTANTIATE --END--
 
   let books = await merger({
@@ -433,7 +433,7 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
     nextBooksNoPages.forEach((el) =>
       forMergingPage.push(el.slice(0, perVirtualPage))
     );
-    await urlMapDB.populateMaps(forMergingPage);
+    if (process.env.DB_SUPPORT) await urlMapDB.populateMaps(forMergingPage);
     books = await merger({
       books: forMergingPage,
       initialValue: books,
@@ -445,11 +445,13 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
   const nextPage = books.length > recordsCap;
   const start = skip;
   const end = limit + skip;
-  const updateDBInfo = await updateDB(
-    books,
-    potentialSameBooksMap.getMap(),
-    requestMap
-  );
+  if (process.env.DB_COMMIT) {
+    const updateDBInfo = await updateDB(
+      books,
+      potentialSameBooksMap.getMap(),
+      requestMap
+    );
+  }
   console.log('REQUEST_MAP: ', requestMap.getMap().size);
   console.log('SAME_BOOKS_MAP:', urlMapDB.getMaps().sameBooksMap.size);
   console.log('NOT_SAME_BOOKS_MAP:', urlMapDB.getMaps().notSameBooksMap.size);
