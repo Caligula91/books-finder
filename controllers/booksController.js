@@ -425,7 +425,7 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
   const start = skip;
   const end = limit + skip;
   if (process.env.DB_COMMIT === 'yes') {
-    await updateDB(books, potentialSameBooksMap.getMap(), requestMap);
+    await updateDB(books, potentialSameBooksMap.getMap(), requestMap, urlMapDB);
   }
   console.log('REQUEST_MAP: ', requestMap.getMap().size);
   sendResponse(res, {

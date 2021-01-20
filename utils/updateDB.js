@@ -7,11 +7,11 @@ const getUrlMap = (books) => {
     if (book.source.length > 1) {
       const urls = book.source.map((src) => src.url);
       for (let i = 0; i < urls.length; i++) {
-        urlMap.set(urls[i], []);
+        urlMap.set(urls[i], new Set());
         const value = urlMap.get(urls[i]);
         for (let j = 0; j < urls.length; j++) {
           if (i !== j) {
-            value.push(urls[j]);
+            value.add(urls[j]);
           }
         }
       }
@@ -38,15 +38,20 @@ const getNotSameMap = (sameMap, potentialSameBooks, requestMap) => {
   return potentialSameBooks;
 };
 
-module.exports = async (books, potentialSameBooks, requestMap) => {
+module.exports = async (books, potentialSameBooks, requestMap, urlMapDB) => {
   const urlMap = getUrlMap(books);
   const commandsArr = [];
   urlMap.forEach((value, key) => {
+    const valueDB = urlMapDB.getSameUrl(key);
+    if (valueDB) {
+      valueDB.forEach((el) => value.delete(el));
+    }
+    if (value.size === 0) return;
     commandsArr.push({
       updateOne: {
         filter: { url: key },
         update: {
-          $addToSet: { sameBooks: { $each: value } },
+          $addToSet: { sameBooks: { $each: Array.from(value) } },
         },
         upsert: true,
       },
@@ -54,6 +59,11 @@ module.exports = async (books, potentialSameBooks, requestMap) => {
   });
   const notSameMap = getNotSameMap(urlMap, potentialSameBooks, requestMap);
   notSameMap.forEach((value, key) => {
+    const valueDB = urlMapDB.getNotSameUrl(key);
+    if (valueDB) {
+      valueDB.forEach((el) => value.delete(el));
+    }
+    if (value.size === 0) return;
     commandsArr.push({
       updateOne: {
         filter: { url: key },
@@ -64,7 +74,6 @@ module.exports = async (books, potentialSameBooks, requestMap) => {
       },
     });
   });
-  // NOT OTPIMISED (REMOVE UNNECECERY COMMANDS)
   const bulkWriterResults = await BookUrlMap.bulkWrite(commandsArr);
   return bulkWriterResults;
 };

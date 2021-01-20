@@ -170,9 +170,9 @@ const samePovez = (povez1, povez2) => {
 };
 
 const samePublisher = (publisher1, publisher2) => {
-  publisher1 = publisher1.replace(/knjige|knjiga|,/gi, '');
+  publisher1 = publisher1.replace(/knjige|knjiga|,/gi, ' ');
   publisher1 = slugify(publisher1, { lower: true });
-  publisher2 = publisher2.replace(/knjige|knjiga|,/gi, '');
+  publisher2 = publisher2.replace(/knjige|knjiga|,/gi, ' ');
   publisher2 = slugify(publisher2, { lower: true });
   const similarity = stringSimilarity.compareTwoStrings(publisher1, publisher2);
   return similarity >= 0.5;
