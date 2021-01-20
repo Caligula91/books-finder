@@ -16,30 +16,14 @@ const getInitBooks = (books) => {
   return returnValue;
 };
 
-const getSource = (url) => {
-  if (url.startsWith('https://www.delfi.rs')) {
-    return 'delfi';
-  }
-  if (url.startsWith('https://www.knjizare-vulkan.rs')) {
-    return 'vulkan';
-  }
-  if (url.startsWith('https://www.korisnaknjiga.com')) {
-    return 'korisna_knjiga';
-  }
-  if (url.startsWith('https://evrobook.rs')) {
-    return 'evrobook';
-  }
-};
-
-const isSameBook = async (url1, url2, requestMap) => {
-  const source1 = getSource(url1);
-  const source2 = getSource(url2);
+const isSameBook = async (data, requestMap) => {
+  const { url1, author1, url2, author2 } = data;
   try {
     const result1 = await requestMap.getResponse(url1);
     const result2 = await requestMap.getResponse(url2);
     const same = compareBooks.secondCompare(
-      { source1, html1: result1.data, url1 },
-      { source2, html2: result2.data, url2 }
+      { url1, html1: result1.data, author1 },
+      { url2, html2: result2.data, author2 }
     );
     return same;
   } catch {
@@ -156,7 +140,13 @@ module.exports = async (values) => {
           url1,
           url2
         );
-        if (passedFirstCompare && (await isSameBook(url1, url2, requestMap))) {
+        if (
+          passedFirstCompare &&
+          (await isSameBook(
+            { url1, author1: book.author, url2, author2: finalBook.author },
+            requestMap
+          ))
+        ) {
           pushSameBook(finalBook, book);
           break;
         }

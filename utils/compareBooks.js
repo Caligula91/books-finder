@@ -1,5 +1,6 @@
 const slugify = require('slugify');
 const HTMLParser = require('node-html-parser');
+const stringSimilarity = require('string-similarity');
 
 const getDetailsObject = (() => {
   return {
@@ -160,19 +161,59 @@ const getDetailsObject = (() => {
   };
 })();
 
+const samePovez = (povez1, povez2) => {
+  if (povez1.length === povez2.length) return povez1 === povez2;
+  if (povez1.length > povez2.length) {
+    return povez1.startsWith(povez2);
+  }
+  return povez2.startsWith(povez1);
+};
+
+const samePublisher = (publisher1, publisher2) => {
+  publisher1 = publisher1.replace(/knjige|knjiga|,/gi, '');
+  publisher1 = slugify(publisher1, { lower: true });
+  publisher2 = publisher2.replace(/knjige|knjiga|,/gi, '');
+  publisher2 = slugify(publisher2, { lower: true });
+  const similarity = stringSimilarity.compareTwoStrings(publisher1, publisher2);
+  return similarity >= 0.5;
+};
+
 // TOLERATE 10% DIFF NUM PAGES
-const samePages = (pages1, pages2) => {
-  const diff = Math.abs(pages1 - pages2);
-  const perc1 = (100 * diff) / pages1;
-  const perc2 = (100 * diff) / pages2;
-  const percMean = (perc1 + perc2) / 2;
-  return percMean < 10;
+const samePages = (pages1, author1, pages2, author2) => {
+  if (pages1 && pages2) {
+    const diff = Math.abs(pages1 - pages2);
+    const perc1 = (100 * diff) / pages1;
+    const perc2 = (100 * diff) / pages2;
+    const percMean = (perc1 + perc2) / 2;
+    return percMean < 10;
+  }
+  if (!author1 || !author2) return false;
+  author1 = slugify(author1, { lower: true });
+  author2 = slugify(author2, { lower: true });
+  const similarity = stringSimilarity.compareTwoStrings(author1, author2);
+  return similarity >= 0.35;
+};
+
+const getSource = (url) => {
+  if (url.startsWith('https://www.delfi.rs')) {
+    return 'delfi';
+  }
+  if (url.startsWith('https://www.knjizare-vulkan.rs')) {
+    return 'vulkan';
+  }
+  if (url.startsWith('https://www.korisnaknjiga.com')) {
+    return 'korisna_knjiga';
+  }
+  if (url.startsWith('https://evrobook.rs')) {
+    return 'evrobook';
+  }
 };
 
 exports.secondCompare = (data1, data2) => {
-  const { source1, html1 } = data1;
-  const { source2, html2 } = data2;
-  // source = 'delfi, vulkan, korisna_knjiga, evrobook'
+  const { url1, html1, author1 } = data1;
+  const { url2, html2, author2 } = data2;
+  const source1 = getSource(url1);
+  const source2 = getSource(url2);
   const obj1 = getDetailsObject[source1](html1);
   const obj2 = getDetailsObject[source2](html2);
   const publisher1 = obj1.publisher;
@@ -181,31 +222,10 @@ exports.secondCompare = (data1, data2) => {
   const publisher2 = obj2.publisher;
   const povez2 = obj2.povez;
   const pages2 = obj2.pages;
-  // console.log(data1.url, publisher1, povez1, pages1);
-  // console.log(data2.url, publisher2, povez2, pages2);
-  if (!publisher1 || !publisher2) {
-    return false;
-  }
-  if (publisher1.length === publisher2.length && publisher1 !== publisher2)
-    return false;
-  if (
-    publisher1.length > publisher2.length &&
-    !publisher1.startsWith(publisher2)
-  ) {
-    return false;
-  }
-  if (
-    publisher2.length > publisher1.length &&
-    !publisher2.startsWith(publisher1)
-  ) {
-    return false;
-  }
-  if (pages1 && pages2 && !samePages(pages1, pages2)) return false;
-  if (povez1.length === povez2.length) return povez1 === povez2;
-  if (povez1.length > povez2.length) {
-    return povez1.startsWith(povez2);
-  }
-  return povez2.startsWith(povez1);
+
+  if (!samePages(pages1, author1, pages2, author2)) return false;
+  if (!samePublisher(publisher1, publisher2)) return false;
+  return samePovez(povez1, povez2);
 };
 
 exports.firstCompare = (() => {
@@ -218,7 +238,7 @@ exports.firstCompare = (() => {
   const isIlustratedEqual = (ilustrated1, ilustrated2) => {
     return ilustrated1 === ilustrated2;
   };
-  const isSlugEqual = (slug1, slug2) => {
+  const isSlugEqual = (slug1, title1, slug2, title2) => {
     let longerArr;
     let shorterArr;
     if (slug1.length > slug2.length) {
@@ -233,15 +253,22 @@ exports.firstCompare = (() => {
       shorterArr.length < Math.floor(longerArr.length / 2)
     )
       return false;
-    return shorterArr.every((el1) => {
+    const equal = shorterArr.every((el1) => {
       return longerArr.includes(el1);
     });
+    if (!equal) {
+      title1 = slugify(title1, { lower: true });
+      title2 = slugify(title2, { lower: true });
+      const similarity = stringSimilarity.compareTwoStrings(title1, title2);
+      return similarity >= 0.75;
+    }
+    return equal;
   };
   return (book1, book2) => {
     return (
       isIlustratedEqual(book1.ilustrated, book2.ilustrated) &&
       isPartEqual(book1.part, book2.part) &&
-      isSlugEqual(book1.slug, book2.slug)
+      isSlugEqual(book1.slug, book1.title, book2.slug, book2.title)
     );
   };
 })();

@@ -312,29 +312,7 @@ exports.getEvrobooks = async (req, res, next) => {
     },
   });
 };
-/**
- * GET ALL BOOKS UTILS
- */
-const getUrlMap = (books) => {
-  const urlMap = new Map();
-  books.forEach((book) => {
-    if (book.source.length > 1) {
-      const urls = book.source.map((src) => src.url);
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < urls.length; i++) {
-        urlMap.set(urls[i], []);
-        const value = urlMap.get(urls[i]);
-        // eslint-disable-next-line no-plusplus
-        for (let j = 0; j < urls.length; j++) {
-          if (i !== j) {
-            value.push(urls[j]);
-          }
-        }
-      }
-    }
-  });
-  return urlMap;
-};
+
 /**
  * ALL BOOKS
  */
@@ -388,7 +366,7 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
   const urlMapDB = new UrlMapDB();
   const requestMap = new RequestMap();
   const potentialSameBooksMap = new PotentialSameBooksMap();
-  if (process.env.DB_SUPPORT) await urlMapDB.populateMaps(forMerging);
+  if (process.env.DB_FETCH === 'yes') await urlMapDB.populateMaps(forMerging);
   // INSTANTIATE --END--
 
   let books = await merger({
@@ -433,7 +411,8 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
     nextBooksNoPages.forEach((el) =>
       forMergingPage.push(el.slice(0, perVirtualPage))
     );
-    if (process.env.DB_SUPPORT) await urlMapDB.populateMaps(forMergingPage);
+    if (process.env.DB_FETCH === 'yes')
+      await urlMapDB.populateMaps(forMergingPage);
     books = await merger({
       books: forMergingPage,
       initialValue: books,
@@ -445,17 +424,10 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
   const nextPage = books.length > recordsCap;
   const start = skip;
   const end = limit + skip;
-  if (process.env.DB_COMMIT) {
-    const updateDBInfo = await updateDB(
-      books,
-      potentialSameBooksMap.getMap(),
-      requestMap
-    );
+  if (process.env.DB_COMMIT === 'yes') {
+    await updateDB(books, potentialSameBooksMap.getMap(), requestMap);
   }
   console.log('REQUEST_MAP: ', requestMap.getMap().size);
-  console.log('SAME_BOOKS_MAP:', urlMapDB.getMaps().sameBooksMap.size);
-  console.log('NOT_SAME_BOOKS_MAP:', urlMapDB.getMaps().notSameBooksMap.size);
-  console.log('POTENTIAL_MAP', potentialSameBooksMap.getMap().size);
   sendResponse(res, {
     page,
     books: books.slice(start, end),
