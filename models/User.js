@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
+const AppError = require('../utils/appError');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -71,28 +72,31 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'default_user.jpg',
   },
-  wishList: [
-    {
-      url: {
-        type: String,
-        required: [true, 'Book must have url'],
-        validate: [validator.isURL, 'Invalid url format'],
+  wishList: {
+    type: [
+      {
+        url: {
+          type: String,
+          required: [true, 'Book must have url'],
+          validate: [validator.isURL, 'Invalid url format'],
+        },
+        title: {
+          type: String,
+          required: [true, 'Book must have a title'],
+        },
+        author: {
+          type: String,
+        },
+        price: Number,
+        onlinePrice: Number,
+        image: {
+          type: String,
+          default: 'default_book.png',
+        },
       },
-      title: {
-        type: String,
-        required: [true, 'Book must have a title'],
-      },
-      author: {
-        type: String,
-      },
-      price: Number,
-      onlinePrice: Number,
-      image: {
-        type: String,
-        default: 'default_book.png',
-      },
-    },
-  ],
+    ],
+    select: false,
+  },
 });
 
 /**
@@ -107,14 +111,22 @@ userSchema.pre('save', async function (next) {
 /**
  * QUERY MIDDLEWARE
  */
-userSchema.pre(/update/i, async function (next) {
+userSchema.pre(/update/i, function (next) {
   if (this.get('password')) {
     // must substract 1000 [ms] because of latency
     this.set('passwordChangedAt', Date.now() - 1000);
   }
   next();
 });
-
+userSchema.pre(/^find/, function (next) {
+  this.select('-__v');
+  next();
+});
+userSchema.pre(/update/i, function (next) {
+  if (this.get('password') && !this.get('passwordConfirm'))
+    next(new AppError('Please confirm your password'), 400);
+  next();
+});
 /**
  * INSTANCE METHODS
  */

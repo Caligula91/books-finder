@@ -16,12 +16,19 @@ router.use(authController.protect);
 router.get('/logout', authController.logOut);
 router.get('/me', userController.getMe);
 router.patch('/password-update', authController.updatePassword);
-router.patch('/updateMe', userController.updateMe);
-router.post('/addWishBook', userController.addWishBook);
+router.patch('/update-me', userController.updateMe);
+router.post('/wishbook', userController.addWishBook);
+router.delete('/delete-me', userController.deleteMe, authController.logOut);
 
 /**
  * PROTECTED ROUTES FOR ADMIN
  */
 router.use(authController.restrictTo('admin'));
+router.route('/').get(userController.getAllUsers).post(userController.addUser);
+router
+  .route('/:id')
+  .get(userController.getUser)
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
 
 module.exports = router;

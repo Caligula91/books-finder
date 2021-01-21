@@ -48,10 +48,17 @@ exports.logIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password)
     return next(new AppError('Email and Password are required to login', 400));
-  const user = await User.findOne({ email }).select('+password');
+  let user = await User.findOne({ email }).select('+password +active');
+  if (!user.active)
+    user = await User.findByIdAndUpdate(
+      user.id,
+      { active: true },
+      { new: true }
+    ).select('+password');
   if (!user || !(await user.isCorrectPassword(password, user.password)))
     return next(new AppError('Incorrect Email or Password', 400));
   user.password = undefined;
+  user.active = undefined;
   sendResponseWithToken(user, res, 200);
 });
 
@@ -173,15 +180,25 @@ exports.logOut = (req, res, next) => {
   });
 };
 
+// HANDLE WHEN USER IS DEACTIVATED
 exports.protect = catchAsync(async (req, res, next) => {
   const token = req.cookies.jwt;
   if (!token) return next(new AppError('You are not logged in', 401));
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  const user = await User.findById(decoded.id).select('+passwordChangedAt');
+  const user = await User.findById(decoded.id).select(
+    '+passwordChangedAt +active'
+  );
   if (!user) return next(new AppError('Invalid token', 401));
+  if (!user.active) return next(new AppError('User is deactivated', 401));
   if (!user.isPasswordValid(decoded.iat))
-    return next(new AppError('Token expired, please login and try again', 401));
+    return next(
+      new AppError(
+        'You are using old password, please login and try again',
+        401
+      )
+    );
   user.passwordChangedAt = undefined;
+  user.active = undefined;
   req.user = user;
   next();
 });
