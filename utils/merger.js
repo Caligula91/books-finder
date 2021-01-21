@@ -17,13 +17,13 @@ const getInitBooks = (books) => {
 };
 
 const isSameBook = async (data, requestMap) => {
-  const { url1, author1, url2, author2 } = data;
+  const { url1, author1, slug1, url2, author2, slug2 } = data;
   try {
     const result1 = await requestMap.getResponse(url1);
     const result2 = await requestMap.getResponse(url2);
     const same = compareBooks.secondCompare(
-      { url1, html1: result1.data, author1 },
-      { url2, html2: result2.data, author2 }
+      { url1, html1: result1.data, author1, slug1 },
+      { url2, html2: result2.data, author2, slug2 }
     );
     return same;
   } catch {
@@ -143,7 +143,14 @@ module.exports = async (values) => {
         if (
           passedFirstCompare &&
           (await isSameBook(
-            { url1, author1: book.author, url2, author2: finalBook.author },
+            {
+              url1,
+              author1: book.author,
+              slug1: book.slug,
+              url2,
+              author2: finalBook.author,
+              slug2: finalBook.slug,
+            },
             requestMap
           ))
         ) {

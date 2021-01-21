@@ -179,18 +179,21 @@ const samePublisher = (publisher1, publisher2) => {
 };
 
 // TOLERATE 10% DIFF NUM PAGES
-const samePages = (pages1, author1, pages2, author2) => {
+const samePages = (data) => {
+  const { pages1, author1, slug1, pages2, author2, slug2 } = data;
+  const tolerate = slug1.length === slug2.length ? 10 : 5;
   if (pages1 && pages2) {
     const diff = Math.abs(pages1 - pages2);
     const perc1 = (100 * diff) / pages1;
     const perc2 = (100 * diff) / pages2;
     const percMean = (perc1 + perc2) / 2;
-    return percMean < 10;
+    return percMean < tolerate;
   }
   if (!author1 || !author2) return false;
-  author1 = slugify(author1, { lower: true });
-  author2 = slugify(author2, { lower: true });
-  const similarity = stringSimilarity.compareTwoStrings(author1, author2);
+  const similarity = stringSimilarity.compareTwoStrings(
+    slugify(author1, { lower: true }),
+    slugify(author2, { lower: true })
+  );
   return similarity >= 0.35;
 };
 
@@ -210,8 +213,8 @@ const getSource = (url) => {
 };
 
 exports.secondCompare = (data1, data2) => {
-  const { url1, html1, author1 } = data1;
-  const { url2, html2, author2 } = data2;
+  const { url1, html1, author1, slug1 } = data1;
+  const { url2, html2, author2, slug2 } = data2;
   const source1 = getSource(url1);
   const source2 = getSource(url2);
   const obj1 = getDetailsObject[source1](html1);
@@ -223,7 +226,8 @@ exports.secondCompare = (data1, data2) => {
   const povez2 = obj2.povez;
   const pages2 = obj2.pages;
 
-  if (!samePages(pages1, author1, pages2, author2)) return false;
+  if (!samePages({ pages1, author1, slug1, pages2, author2, slug2 }))
+    return false;
   if (!samePublisher(publisher1, publisher2)) return false;
   return samePovez(povez1, povez2);
 };
