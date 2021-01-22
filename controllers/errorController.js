@@ -15,7 +15,7 @@ const sendErrorProd = (err, req, res) => {
   // 1) Log error
   console.error('ERROR 💥', err);
   // 2) Send generic message
-  return res.status(500).json({
+  return res.status(500).render('error', {
     status: 'error',
     message: 'Something went very wrong!',
   });
@@ -31,7 +31,6 @@ const sendErrorDev = (err, req, res) => {
       stack: err.stack,
     });
   }
-
   // B) RENDERED WEBSITE
   // eslint-disable-next-line
   console.error('ERROR 💥', err);
