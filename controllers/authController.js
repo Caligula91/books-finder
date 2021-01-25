@@ -49,13 +49,14 @@ exports.logIn = catchAsync(async (req, res, next) => {
   if (!email || !password)
     return next(new AppError('Email and Password are required to login', 400));
   let user = await User.findOne({ email }).select('+password +active');
+  if (!user) return next(new AppError('Email does not match any account', 400));
   if (!user.active)
     user = await User.findByIdAndUpdate(
       user.id,
       { active: true },
       { new: true }
     ).select('+password');
-  if (!user || !(await user.isCorrectPassword(password, user.password)))
+  if (!(await user.isCorrectPassword(password, user.password)))
     return next(new AppError('Incorrect Email or Password', 400));
   user.password = undefined;
   user.active = undefined;
@@ -200,5 +201,33 @@ exports.protect = catchAsync(async (req, res, next) => {
   user.passwordChangedAt = undefined;
   user.active = undefined;
   req.user = user;
+  res.locals.user = user;
   next();
 });
+
+// Only for rendered pages, no errors!
+exports.isLoggedIn = async (req, res, next) => {
+  const token = req.cookies.jwt;
+  if (token) {
+    try {
+      // 1) verify token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      // 2) Check if user still exists
+      const user = await User.findById(decoded.id).select(
+        '+passwordChangedAt +active +wishList'
+      );
+      if (!user || !user.active) return next();
+      // 3) Check if user changed password after the token was issued
+      if (!user.isPasswordValid(decoded.iat)) return next();
+      // THERE IS A LOGGED IN USER
+      // SAVE user TO LOCALS
+      res.locals.user = user;
+      user.passwordChangedAt = undefined;
+      user.active = undefined;
+      return next();
+    } catch (err) {
+      return next();
+    }
+  }
+  next();
+};

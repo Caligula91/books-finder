@@ -1,22 +1,25 @@
-doctype html
 html
   head
     block head
-      meta(charset='UTF-8')
-      meta(name='viewport' content='width=device-width, initial-scale=1.0')
-      link(rel='stylesheet' href='/css/style.css')
-      link(rel='shortcut icon' type='image/png' href='/img/favicon.png')
-      link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,300i,700')
-      title Knjigoteka | #{title}
+        meta(charset='UTF-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+        meta(http-equiv='X-UA-Compatible' content='ie=edge')
+        link(rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.2/css/all.css' integrity='sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr' crossorigin='anonymous')
+        link(href='https://fonts.googleapis.com/css?family=Candal|Lora' rel='stylesheet')
+        link(rel='stylesheet' href='/css/style.css')
+        link(rel='shortcut icon' type='image/png' href='/img/favicon.png')
+        title Knjigomanija | #{title}
 
   body
-    // HEADER
     include _header
 
-    // CONTENT
     block content
       h1 This is a placeholder heading
 
-    // FOOTER
-    include _footer
-    script(src="/js/bundle.js")
+    block foot
+      include _footer
+      script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js")
+      script(type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js")
+      //- script(src="/js/index.js")
+      //- script(src="/js/slide.js")
+      script(src="/js/bundle.js")

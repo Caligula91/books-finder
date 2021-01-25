@@ -1,0 +1,18 @@
+extends base
+
+block content
+    .auth-content
+        label.auth-errors
+        form.login-form
+            h2.form-title #{title}
+            div
+                label Email
+                input.text-input(type='email' name='email' required)
+            div
+                label Password
+                input.text-input(type='password' name='password' required)
+            div
+                button.btn.btn-big.login-btn Log In
+            p
+                | Or 
+                a(href='/signup') Sign Up

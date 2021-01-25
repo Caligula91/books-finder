@@ -1,13 +1,19 @@
 const axios = require('axios');
+const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
-exports.getOverview = (req, res, next) => {
+exports.getOverview = catchAsync(async (req, res, next) => {
+  const response = await axios(
+    `${req.protocol}://${req.get('host')}/api/v1/books/top-books`
+  );
+  const { topBooks } = response.data;
   res.status(200).render('overview', {
-    title: 'Search Books',
+    title: 'Home',
+    topBooks,
   });
-};
+});
 
-exports.getSearchResults = catchAsync(async (req, res, next) => {
+exports.getSearchBooks = catchAsync(async (req, res, next) => {
   const { search, page, limit } = req.query;
   const select = req.query.select || 'delfi+vulkan+evrobook+korisnaknjiga';
   const url = encodeURI(
@@ -20,33 +26,70 @@ exports.getSearchResults = catchAsync(async (req, res, next) => {
     url,
     headers: { 'Content-type': 'application/json' },
   });
-  if (result.data.status === 'success') {
-    const { books } = result.data.data;
-    const { nextPage, previousPage } = result.data;
-    const currentPage = result.data.page;
-    res.status(200).render('searchResults', {
-      title: 'Search Results',
-      books,
-      search,
-      pageInfo: {
-        currentPage,
-        nextPage: nextPage
-          ? `${req.protocol}://${req.get(
-              'host'
-            )}/pretraga?search=${search}&page=${
-              currentPage + 1
-            }&limit=${limit}&select=${select}`
-          : false,
-        previousPage: previousPage
-          ? `${req.protocol}://${req.get(
-              'host'
-            )}/pretraga?search=${search}&page=${
-              currentPage - 1
-            }&limit=${limit}&select=${select}`
-          : false,
-      },
-    });
+  if (!result.data.status === 'success')
+    return next(new AppError('Problem with getting search results', 404));
+  const { books } = result.data.data;
+  const { nextPage, previousPage } = result.data;
+  const currentPage = result.data.page;
+  res.status(200).render('searchResults', {
+    title: 'Search Results',
+    books,
+    search,
+    pageInfo: {
+      currentPage,
+      nextPage: nextPage
+        ? `${req.protocol}://${req.get(
+            'host'
+          )}/pretraga?search=${search}&page=${
+            currentPage + 1
+          }&limit=${limit}&select=${select}`
+        : false,
+      previousPage: previousPage
+        ? `${req.protocol}://${req.get(
+            'host'
+          )}/pretraga?search=${search}&page=${
+            currentPage - 1
+          }&limit=${limit}&select=${select}`
+        : false,
+    },
+  });
+});
+
+exports.signup = (req, res, next) => {
+  // 1. Check if already logged in, if it is then redirect to home page and send alert
+  // 2. Redirect to signup page if not logged in
+  if (res.locals.user) {
+    res.redirect(`${req.protocol}://${req.get('host')}/`);
   } else {
-    res.status(200).render('error');
+    res.status(200).render('signup', {
+      title: 'SignUp',
+    });
   }
+};
+
+exports.login = (req, res, next) => {
+  if (res.locals.user) {
+    res.redirect(`${req.protocol}://${req.get('host')}/`);
+  } else {
+    res.status(200).render('login', {
+      title: 'LogIn',
+    });
+  }
+};
+
+exports.logout = (req, res, next) => {
+  if (res.locals.user) {
+    res.cookie('jwt', 'blank', {
+      expires: new Date(Date.now() + 1000),
+      httpOnly: true,
+    });
+    res.locals.user = undefined;
+  }
+  res.redirect('/');
+};
+
+exports.getMe = catchAsync(async (req, res, next) => {
+  const { user } = res.locals;
+  if (!user) return res.redirect('/');
+  // 1.
 });

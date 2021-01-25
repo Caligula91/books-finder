@@ -70,6 +70,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
+  // eslint-disable-next-line no-console
   console.log(process.env.NODE_ENV.toUpperCase());
 }
 

@@ -11,6 +11,7 @@ const catchAsync = require('../utils/catchAsync');
 const UrlMapDB = require('../utils/urlMapDB');
 const RequestMap = require('../utils/requestMap');
 const PotentialSameBooksMap = require('../utils/potentialSameBooksMap');
+const TopBooks = require('../models/topBookModel');
 const updateDB = require('../utils/updateDB');
 
 const sources = {
@@ -439,8 +440,8 @@ exports.getAllBooks = catchAsync(async (req, res, next) => {
 /**
  * TOP BOOKS
  */
-const getTopBooks = (() => {
-  const timeout = 5000;
+const getParsedTopBooks = (() => {
+  const timeout = 10000;
   const url = {
     delfi: `https://www.delfi.rs/top-liste.html`,
     vulkan: `https://www.knjizare-vulkan.rs/`,
@@ -456,6 +457,14 @@ const getTopBooks = (() => {
 })();
 
 exports.getTopBooks = catchAsync(async (req, res, next) => {
+  const topBooks = await TopBooks.find();
+  res.status(200).json({
+    status: 'success',
+    topBooks,
+  });
+});
+
+exports.updateTopBooksDB = catchAsync(async (req, res, next) => {
   const { select } = req.query;
   const selectArr = select
     ? select.split(' ').reduce((acc, cur) => {
@@ -464,14 +473,28 @@ exports.getTopBooks = catchAsync(async (req, res, next) => {
       }, [])
     : Object.values(sources);
   const booksPromises = await Promise.allSettled(
-    selectArr.map((src) => getTopBooks(src))
+    selectArr.map((src) => getParsedTopBooks(src))
   );
-  const results = booksPromises.reduce((acc, curr) => {
-    if (curr.status === 'fulfilled') acc.push(curr.value);
+  const commandsDB = booksPromises.reduce((acc, curr) => {
+    if (curr.status === 'fulfilled') {
+      acc.push({
+        updateOne: {
+          filter: { source: curr.value.source },
+          update: {
+            dateModified: Date.now(),
+            $set: { books: curr.value.books },
+          },
+          upsert: true,
+        },
+      });
+    }
     return acc;
   }, []);
+  const updateInfo = await TopBooks.bulkWrite(commandsDB);
   res.status(200).json({
     status: 'success',
-    topBooks: results,
+    data: {
+      updateInfo,
+    },
   });
 });

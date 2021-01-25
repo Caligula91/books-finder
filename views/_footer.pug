@@ -1,16 +1,45 @@
-footer.footer
-  //- .footer__logo
-  //-   img(src='/img/logo/main_logo.png' alt='Knjigoteka logo')
-  if (pageInfo) 
-    ul.footer__pagination
-      if (pageInfo.previousPage)      
-        li: a(href=`${pageInfo.previousPage}`) Previous  
-      if (pageInfo.currentPage)
-        li: a(href='#') #{pageInfo.currentPage} 
-      if (pageInfo.nextPage)
-        li: a(href=`${pageInfo.nextPage}`) Next 
-  ul.footer__nav
-    li: a(href='#') About me
-    li: a(href='#') Contact
-  br
-  p.footer__copyright &copy; by Mihajlo Nikolic
+.footer
+  .footer-content
+    .footer-section.about
+      h1.logo-text Info
+      p
+        | Sajt sam napravio sam ciljem da obogatim cv jednim projektom i samim tim povecam verovatnocu pronalazenja posla. Ukoliko imate neka pitanja ili sugestije, slobodno posaljite.
+      .contact
+        span
+          i.fas.fa-phone
+          |  &nbsp; +38164509090
+        span
+          i.fas.fa-envelope
+          |  &nbsp; nanica71@gmail.com
+      .socials
+        a(href='#')
+          i.fab.fa-facebook
+        a(href='#')
+          i.fab.fa-instagram
+        a(href='#')
+          i.fab.fa-twitter
+        a(href='#')
+          i.fab.fa-youtube
+    .footer-section.links
+      h2 Links
+      br
+      ul
+        a(href='#')
+          li Home
+        a(href='#')
+          li About me
+        a(href='#')
+          li About project
+        a(href='#')
+          li Terms and Conditions
+    .footer-section.contact-form
+      h2 Contact me
+      br
+      form(action='index.html' method='post')
+        input.text-input.contact-input(type='email' name='email' placeholder='Your email address...')
+        textarea.text-input.contact-input(rows='4' name='message' placeholder='Your message...')
+        button.btn.btn-big.contact-btn(type='submit')
+          i.fas.fa-envelope
+          |             Send
+  .footer-bottom
+    | &copy; books-finder.herokuapp.com | by Caligula

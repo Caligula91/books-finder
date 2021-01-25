@@ -1,10 +1,16 @@
 import '@babel/polyfill';
+import '../js/slide';
+import login from './login';
+import signup from './signup'
+
 /**
  * DOM 
  */
-const searchButton = document.querySelector('.nav__search-btn');
+const searchForm = document.querySelector('.search-form');
 const selectOptions = document.getElementById('per_page');
-const checkBox = document.querySelector('.nav__select');
+const checkBox = document.querySelector('.filters-select');
+const signupForm = document.querySelector('.signup-form');
+const loginForm = document.querySelector('.login-form');
 
 /**
  * QUERY STRING
@@ -35,10 +41,11 @@ if (checkBox) {
     } 
 }
 
-if (searchButton) {
-    searchButton.addEventListener('click', event => {
+if (searchForm) {
+    searchForm.addEventListener('submit', event => {
         event.preventDefault();
-        const input = document.querySelector('.nav__search-input').value.trim();
+        const input = document.querySelector('.search-input').value.trim();
+        if (input === '') return;
         const limit = (selectOptions)?document.getElementById('per_page').value:48;
         const select = (checkBox)?Array.from(checkBox.querySelectorAll('input')).reduce((acc, curr) => {
                 return (curr.checked)?acc+curr.value+'+':acc;
@@ -46,3 +53,42 @@ if (searchButton) {
         location.assign(`/pretraga?search=${input}&limit=${limit}&select=${select}`);
     });
 }
+
+if (signupForm) {
+    signupForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        document.querySelector('.auth-errors').innerHTML = '';
+        const searchButton = document.querySelector('.signup-btn');
+        searchButton.textContent = 'Processing...';
+        searchButton.disabled = true;
+        const name = signupForm.querySelector('input[name="name"]').value.trim();
+        const email = signupForm.querySelector('input[name="email"]').value.trim();
+        const password = signupForm.querySelector('input[name="password"]').value.trim();
+        const passwordConfirm = signupForm.querySelector('input[name="passwordConfirm"]').value.trim();
+        signup({name, email, password, passwordConfirm}, signupForm, searchButton);
+    });
+    signupForm.querySelectorAll('input').forEach(el => {
+        el.addEventListener('focus', e => {
+            e.target.style.border = '';
+        });
+    });
+}
+
+if (loginForm) {
+    loginForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        document.querySelector('.auth-errors').innerHTML = '';
+        const loginButton = document.querySelector('.login-btn');
+        loginButton.textContent = 'Processing...';
+        loginButton.disabled = true;
+        const password = loginForm.querySelector('input[name="password"]').value.trim();
+        const email = loginForm.querySelector('input[name="email"]').value.trim();
+        login({email, password}, loginForm, loginButton);
+    });
+    loginForm.querySelectorAll('input').forEach(el => {
+        el.addEventListener('focus', e => {
+            e.target.style.border = '';
+        });
+    });
+}
+

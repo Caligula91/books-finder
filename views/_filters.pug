@@ -1,0 +1,22 @@
+.filters
+    .filters-select
+        input#delfi(type='checkbox' name='delfi' value='delfi' checked='checked')
+        label(for='delfi')  DELFI
+        br
+        input#vulkan(type='checkbox' name='vulkan' value='vulkan' checked='checked')
+        label(for='vulkan')  VULKAN
+        br
+        input#evrobook(type='checkbox' name='evrobook' value='evrobook' checked='checked')
+        label(for='evrobook')  EVROBOOK
+        br
+        input#korisnaknjiga(type='checkbox' name='korisnaknjiga' value='korisnaknjiga' checked='checked')
+        label(for='korisnaknjiga')  KORISNA KNJIGA
+        br
+        br
+    .filters-limit
+        label Prikazi: 
+        select#per_page
+            option(value='12') 12
+            option(value='24') 24
+            option(value='36' selected='') 36
+            option(value='48') 48

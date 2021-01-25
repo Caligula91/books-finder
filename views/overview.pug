@@ -1,5 +1,27 @@
 extends base
 
+mixin result(book)
+    .post
+        a(href=`${book.url}`, target="_blank", rel="noopener noreferrer")
+            img.slider-image(src=`${book.img}`, alt=`${book.title}`)
+        .post-info
+            p.post-info-title #{book.title.toUpperCase()}
+            p.post-info-author #{book.author}
+            p.post-info-price #{(book.onlinePrice)?book.onlinePrice:book.price} RSD
+
 block content
-  main.main
-    h1 Feel free to search books
+    .page-wrapper
+        include _filters
+        if (topBooks.length === 0)
+            h1 No top books... Problem with server
+        else
+            each src in topBooks
+                .post-slider
+                    h1.slider-title TOP #{src.source.toUpperCase()} BOOKS #{(src.isUpdated)?'':'(OUTDATED!)'}
+                    i.fas.fa-chevron-left.prev
+                    i.fas.fa-chevron-right.next
+                    .post-wrapper
+                        each book in src.books
+                            +result(book)
+
+            
