@@ -9,45 +9,37 @@ const sendErrorProd = (err, req, res) => {
       return res.status(err.statusCode).json({
         status: err.status,
         message: err.message,
+        problemFields: err.problemFields,
       });
     }
+  }
+  // B) RENDERED WEBSITE
+  // A) Operational, trusted error: send message to client
+  if (err.isOperational) {
+    return res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!',
+      msg: err.message,
+    });
   }
   // B) Programming or other unknown error: don't leak error details
   // 1) Log error
   // eslint-disable-next-line
   console.error('ERROR 💥', err);
   // 2) Send generic message
-  return res.status(500).render('error', {
-    status: 'error',
-    message: 'Something went very wrong!',
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: 'Please try again later.',
   });
 };
 
 const sendErrorDev = (err, req, res) => {
   // A) API
   if (req.originalUrl.startsWith('/api')) {
-    /**
-     * REMOVE LATER FROM DEV BEGIN
-     */
-    const problemFields = {};
-    if (err.name === 'ValidationError') {
-      Object.entries(err.errors).forEach(([key, value]) => {
-        problemFields[key] = value.message;
-      });
-    } else if (err.code === 11000) {
-      Object.entries(err.keyValue).forEach(([key, value]) => {
-        problemFields[key] = `${value} already exists`;
-      });
-    }
-    /**
-     * REMOVE LATER FROM DEV END
-     */
     return res.status(err.statusCode).json({
       status: err.status,
       error: err,
       message: err.message,
       stack: err.stack,
-      problemFields,
     });
   }
   // B) RENDERED WEBSITE
@@ -73,12 +65,25 @@ const handleCastErrorDB = (err) => {
   return new AppError(`Invalid ${err.path}: ${err.value}`, 400);
 };
 const handleDuplicateFieldsDB = (err) => {
+  const problemFields = {};
+  Object.entries(err.keyValue).forEach(([key, value]) => {
+    problemFields[key] = `${value} already exists`;
+  });
   const message = `Duplicate field ${JSON.stringify(err.keyValue)}`;
-  return new AppError(message, 400);
+  const error = new AppError(message, 400);
+  error.problemFields = problemFields;
+  return error;
 };
 const handleValidationErrorDB = (err) => {
-  const errors = Object.values(err.errors).map((el) => el.message);
-  return new AppError(`Invalid Input Data. ${errors.join('. ')}`, 400);
+  const problemFields = {};
+  Object.entries(err.errors).forEach(([key, value]) => {
+    problemFields[key] = value.message;
+  });
+
+  const message = Object.values(err.errors).map((el) => el.message);
+  const error = new AppError(`Invalid Input Data. ${message.join('. ')}`, 400);
+  error.problemFields = problemFields;
+  return error;
 };
 
 module.exports = (err, req, res, next) => {
