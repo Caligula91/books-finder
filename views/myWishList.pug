@@ -1,0 +1,25 @@
+extends base
+
+block content
+    .user-page-wrapper
+        include _userSettings
+        .wishlist-container
+            h2.page-title My #{title}
+            br
+            each book in user.wishList
+                .wish__card
+                    .wish__card-picture
+                        a(href=`${book.url}` target="_blank" rel="noopener noreferrer")
+                            img(src=`${book.image}` alt=`${book.image}`)
+                    .wish__card-source
+                        a(href=`${book.url}` target="_blank" rel="noopener noreferrer")
+                            img(src=`/img/logo/${book.source}.png` alt=book.source)
+                    .wish__card-heart
+                        i.addWishList.fas.fa-heart(data-title=`${book.title}` data-author=`${book.author}` data-image=`${book.image}` data-price=`${book.price}` data-online-price=`${book.onlinePrice}` data-source=`${book.source}` data-url=`${book.url}` style="font-size: 1.6rem;")
+                    .wish__card-info
+                        p #{book.title.toUpperCase()}
+                        p #{book.author || 'unknown'}
+                        table.wish__card-price
+                            tr
+                                td #{(book.price)?`${new Intl.NumberFormat('de-DE', { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(book.price)} RSD`:''}
+                                td #{(book.onlinePrice)?`${new Intl.NumberFormat('de-DE', { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(book.onlinePrice)} RSD`:''}

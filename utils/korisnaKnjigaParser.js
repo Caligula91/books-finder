@@ -34,15 +34,17 @@ exports.parseBooks = (html) => {
         title,
         author,
         slug,
-        img,
         ilustrated,
         extended,
         part,
         source: {
-          name: 'Korisna_Knjiga',
+          name: 'korisna_Knjiga',
           logo: '/img/logo/korisna_knjiga.png',
           onlinePrice: price,
           url,
+          img,
+          title,
+          author,
         },
       });
     });

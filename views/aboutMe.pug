@@ -1,0 +1,21 @@
+extends base
+
+block content
+    .user-page-wrapper
+        include _userSettings
+        .auth-content
+            h2.page-title About Me
+            br
+            table
+                tr
+                    td Name
+                    td #{user.name.split(' ')[0]}
+                tr
+                    td Email: 
+                    td #{user.email}
+                tr
+                    td Role: 
+                    td #{user.role}
+                tr
+                    td Since:
+                    td #{user.accountCreated.toISOString().slice(0,10)}

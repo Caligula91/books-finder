@@ -37,16 +37,18 @@ exports.parseBooks = (html) => {
         title,
         author,
         slug,
-        img,
         ilustrated,
         extended,
         part,
         source: {
-          name: 'Vulkan',
+          name: 'vulkan',
           logo: '/img/logo/vulkan.png',
           price,
           onlinePrice,
           url,
+          img,
+          title,
+          author,
         },
       });
     });

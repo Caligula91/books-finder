@@ -1,7 +1,9 @@
 import '@babel/polyfill';
 import '../js/slide';
+import { showAlert } from './alert';
 import login from './login';
 import signup from './signup'
+import { addBook, removeBook } from './wishlist';
 
 /**
  * DOM 
@@ -11,6 +13,7 @@ const selectOptions = document.getElementById('per_page');
 const checkBox = document.querySelector('.filters-select');
 const signupForm = document.querySelector('.signup-form');
 const loginForm = document.querySelector('.login-form');
+const addWishList = document.querySelectorAll('.addWishList');
 
 /**
  * QUERY STRING
@@ -92,3 +95,17 @@ if (loginForm) {
     });
 }
 
+if (addWishList.length > 0) {
+    // .far = empty heart; .fas = full heart
+    addWishList.forEach(el => {
+        el.addEventListener('click', (event) => {
+            event.preventDefault();
+            if (el.classList.contains('far')) {
+                // Add to wish list and alert
+                addBook(el);
+            } else if (el.classList.contains('fas')) {
+                removeBook(el);
+            }
+        });
+    });
+}

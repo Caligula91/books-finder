@@ -33,15 +33,17 @@ exports.parseBooks = (html) => {
         title,
         author: undefined,
         slug,
-        img,
         ilustrated,
         extended,
         part,
         source: {
-          name: 'Evrobook',
+          name: 'evrobook',
           logo: '/img/logo/evrobooks.png',
           onlinePrice: price,
           url: `https://evrobook.rs/${url}`,
+          img,
+          title,
+          author: undefined,
         },
       });
     });

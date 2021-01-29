@@ -28,16 +28,18 @@ exports.parseBooks = (html) => {
         title,
         author,
         slug,
-        img,
         ilustrated,
         extended,
         part,
         source: {
-          name: 'Delfi',
+          name: 'delfi',
           logo: '/img/logo/delfi.png',
           price,
           onlinePrice,
           url,
+          img,
+          title,
+          author,
         },
       });
     });

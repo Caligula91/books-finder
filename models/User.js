@@ -72,9 +72,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'default_user.jpg',
   },
+  accountCreated: {
+    type: Date,
+    default: Date.now(),
+  },
   wishList: {
     type: [
       {
+        source: String,
         url: {
           type: String,
           required: [true, 'Book must have url'],
@@ -122,6 +127,7 @@ userSchema.pre(/^find/, function (next) {
   this.select('-__v');
   next();
 });
+
 userSchema.pre(/update/i, function (next) {
   if (this.get('password') && !this.get('passwordConfirm'))
     next(new AppError('Please confirm your password'), 400);

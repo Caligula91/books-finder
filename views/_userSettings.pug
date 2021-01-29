@@ -1,0 +1,18 @@
+.left-sidebar
+    ul
+        li
+            a(href='/user') About Me
+        li
+            a(href='/user/update-name') Change Name
+        li
+            a(href='/user/update-password') Change Password
+        li
+            a(href='/user/wish-list') My WishList
+    br
+    br
+    if (user.role === 'admin')
+        ul
+            li
+                a(href='#') Manage Users
+            li
+                a(href='#') Update TopBooks

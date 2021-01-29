@@ -55,26 +55,26 @@ exports.getSearchBooks = catchAsync(async (req, res, next) => {
   });
 });
 
+/**
+ * REDIRECT HOME
+ */
+exports.redirectHome = (req, res, next) => {
+  if (res.locals.user) res.redirect(`${req.protocol}://${req.get('host')}/`);
+  else next();
+};
+
 exports.signup = (req, res, next) => {
   // 1. Check if already logged in, if it is then redirect to home page and send alert
   // 2. Redirect to signup page if not logged in
-  if (res.locals.user) {
-    res.redirect(`${req.protocol}://${req.get('host')}/`);
-  } else {
-    res.status(200).render('signup', {
-      title: 'SignUp',
-    });
-  }
+  res.status(200).render('signup', {
+    title: 'SignUp',
+  });
 };
 
 exports.login = (req, res, next) => {
-  if (res.locals.user) {
-    res.redirect(`${req.protocol}://${req.get('host')}/`);
-  } else {
-    res.status(200).render('login', {
-      title: 'LogIn',
-    });
-  }
+  res.status(200).render('login', {
+    title: 'LogIn',
+  });
 };
 
 exports.logout = (req, res, next) => {
@@ -88,8 +88,35 @@ exports.logout = (req, res, next) => {
   res.redirect('/');
 };
 
-exports.getMe = catchAsync(async (req, res, next) => {
-  const { user } = res.locals;
-  if (!user) return res.redirect('/');
-  // 1.
-});
+exports.getMe = (req, res, next) => {
+  res.status(200).render('aboutMe', {
+    title: 'My Account',
+  });
+};
+
+exports.forgotPassword = (req, res, next) => {
+  res.status(200).render('forgotPassword', {
+    title: 'Reset Password',
+  });
+};
+
+/**
+ * PROTECTED TO THROW ERROR
+ */
+exports.updateName = (req, res, next) => {
+  res.status(200).render('updateName', {
+    title: 'Change Name',
+  });
+};
+
+exports.updatePassword = (req, res, next) => {
+  res.status(200).render('updatePassword', {
+    title: 'Change Password',
+  });
+};
+
+exports.getWishList = (req, res, next) => {
+  res.status(200).render('myWishList', {
+    title: 'WishList',
+  });
+};

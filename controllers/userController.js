@@ -50,11 +50,54 @@ exports.addWishBook = catchAsync(async (req, res, next) => {
       omitUndefined: true,
       runValidators: true,
     }
-  );
-  if (!user) return next(new AppError('Book already in wish list', 400));
+  ).select('+wishList');
+  if (!user) return next(new AppError('Book already in Wish List', 400));
   res.status(200).json({
     status: 'success',
     message: 'DEVELOPMENT',
+    data: {
+      user,
+    },
+  });
+});
+
+exports.removeWishBook = catchAsync(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    {
+      _id: req.user.id,
+    },
+    {
+      $pull: { wishList: { url: req.body.url } },
+    },
+    {
+      new: true,
+    }
+  ).select('+wishList');
+  // CHANGE CODE
+  if (!user) return next(new AppError('User not found', 400));
+  res.status(204).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
+});
+
+exports.clearWishList = catchAsync(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    {
+      _id: req.user.id,
+    },
+    {
+      $set: { wishList: [] },
+    },
+    {
+      new: true,
+    }
+  ).select('+wishList');
+  if (!user) return next(new AppError('User not found', 400));
+  res.status(204).json({
+    status: 'success',
     data: {
       user,
     },

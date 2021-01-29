@@ -66,10 +66,11 @@ const handleCastErrorDB = (err) => {
 };
 const handleDuplicateFieldsDB = (err) => {
   const problemFields = {};
+  let message = '';
   Object.entries(err.keyValue).forEach(([key, value]) => {
     problemFields[key] = `${value} already exists`;
+    message += `${problemFields[key]} `;
   });
-  const message = `Duplicate field ${JSON.stringify(err.keyValue)}`;
   const error = new AppError(message, 400);
   error.problemFields = problemFields;
   return error;

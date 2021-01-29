@@ -7,11 +7,9 @@ const compareBooks = require('./compareBooks');
 const getInitBooks = (books) => {
   const returnValue = [];
   books.forEach((book) => {
-    const img = [];
-    img.push(book.img);
     const source = [];
     source.push(book.source);
-    returnValue.push(new Book(book, img, source));
+    returnValue.push(new Book(book, source));
   });
   return returnValue;
 };
@@ -81,14 +79,11 @@ const populateMap = (
 };
 
 const pushNewBook = (finalBooks, book) => {
-  const img = [];
-  img.push(book.img);
   const source = [];
   source.push(book.source);
-  finalBooks.push(new Book(book, img, source));
+  finalBooks.push(new Book(book, source));
 };
 const pushSameBook = (finalBook, book) => {
-  finalBook.img.push(book.img);
   finalBook.source.push(book.source);
 };
 

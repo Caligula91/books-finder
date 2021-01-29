@@ -16,7 +16,7 @@ export default async function signup(data, signupForm, btn) {
             // 2. Redirect to home page after short delay
             window.setTimeout(() => {
                 location.assign('/');
-            }, 2000);
+            }, 1250);
         } 
     } catch (error) {
         showAlert('error', error.response.data.message);

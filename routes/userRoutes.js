@@ -14,10 +14,13 @@ router.patch('/password-reset/:token', authController.resetPassword);
  */
 router.use(authController.protect);
 router.get('/logout', authController.logOut);
+// CHAIN!
 router.get('/me', userController.getMe);
 router.patch('/password-update', authController.updatePassword);
 router.patch('/update-me', userController.updateMe);
 router.post('/wishbook', userController.addWishBook);
+router.delete('/wishbook', userController.removeWishBook);
+router.delete('/clear-wishlist', userController.clearWishList);
 router.delete('/delete-me', userController.deleteMe, authController.logOut);
 
 /**

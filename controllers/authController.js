@@ -49,7 +49,7 @@ exports.logIn = catchAsync(async (req, res, next) => {
   if (!email || !password)
     return next(new AppError('Email and Password are required to login', 400));
   let user = await User.findOne({ email }).select('+password +active');
-  if (!user) return next(new AppError('Email does not match any account', 400));
+  if (!user) return next(new AppError('Incorrect Email or Password', 400));
   if (!user.active)
     user = await User.findByIdAndUpdate(
       user.id,
@@ -187,7 +187,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   if (!token) return next(new AppError('You are not logged in', 401));
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const user = await User.findById(decoded.id).select(
-    '+passwordChangedAt +active'
+    '+passwordChangedAt +active +wishList'
   );
   if (!user) return next(new AppError('Invalid token', 401));
   if (!user.active) return next(new AppError('User is deactivated', 401));
@@ -221,6 +221,8 @@ exports.isLoggedIn = async (req, res, next) => {
       if (!user.isPasswordValid(decoded.iat)) return next();
       // THERE IS A LOGGED IN USER
       // SAVE user TO LOCALS
+      // CREATE SET OF URL WISH BOOKS FOR BETTER PERFOMANCE
+      user.wishListSet = new Set(user.wishList.map((book) => book.url));
       res.locals.user = user;
       user.passwordChangedAt = undefined;
       user.active = undefined;
