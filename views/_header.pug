@@ -10,26 +10,13 @@ header
   ul.nav
     if (user)
       li
-        a(href='#') ABOUT
+        a#user-wish-list(href='/user/wish-list') WISHLIST(#{user.wishList.length})
       li
         a.logout(href='/logout') LOG OUT
       li
         a.fa.fa-user(href='/user')   #{user.name.split(' ')[0]}
     else
       li
-        a(href='#') ABOUT
-      li
         a(href='/login') LOG IN
       li
         a(href='/signup') SIGN UP
-    //- IF USER LOGGED IN
-    //- li
-    //-   a(href='#')
-    //-     i.fa.fa-user
-    //-     |           Mihajlo
-    //-     i.fa.fa-chevron-down(style='font-size: .8em;')
-    //-   ul
-    //-     li
-    //-       a(href='#') DASHBOARD
-    //-     li
-    //-       a.logout(href='#') LOGOUT

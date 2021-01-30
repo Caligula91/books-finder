@@ -57,6 +57,7 @@ exports.addWishBook = catchAsync(async (req, res, next) => {
     message: 'DEVELOPMENT',
     data: {
       user,
+      wishListSize: user.wishList.length,
     },
   });
 });
@@ -75,10 +76,11 @@ exports.removeWishBook = catchAsync(async (req, res, next) => {
   ).select('+wishList');
   // CHANGE CODE
   if (!user) return next(new AppError('User not found', 400));
-  res.status(204).json({
+  res.status(200).json({
     status: 'success',
     data: {
       user,
+      wishListSize: user.wishList.length,
     },
   });
 });

@@ -5,8 +5,8 @@ mixin result(src)
         td
             a(href=`${src.url}`, target="_blank", rel="noopener noreferrer")
                 img(src=`/img/logo/${src.name}.png` alt=src.name)
-        td #{(src.price)?new Intl.NumberFormat('de-DE', { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(src.price):'/'}
-        td #{(src.onlinePrice)?new Intl.NumberFormat('de-DE', { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(src.onlinePrice):'/'}
+        td #{(src.price)?new Intl.NumberFormat('de-DE', { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(src.price):'-'}
+        td #{(src.onlinePrice)?new Intl.NumberFormat('de-DE', { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(src.onlinePrice):'-'}
         td.wishlist
             i.addWishList.fa-heart(data-title=`${src.title}` data-author=`${src.author}` data-image=`${src.img}` data-price=`${src.price}` data-online-price=`${src.onlinePrice}` data-source=`${src.name}` data-url=`${src.url}` class=`${(user && user.wishListSet.has(src.url))?'fas':'far'}`)
                 

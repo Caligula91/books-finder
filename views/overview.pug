@@ -1,6 +1,6 @@
 extends base
 
-mixin result(book)
+mixin result(book, source)
     .post
         a(href=`${book.url}`, target="_blank", rel="noopener noreferrer")
             img.slider-image(src=`${book.img}`, alt=`${book.title}`)
@@ -8,6 +8,7 @@ mixin result(book)
             p.post-info-title #{book.title.toUpperCase()}
             p.post-info-author #{book.author}
             p.post-info-price #{(book.onlinePrice)?book.onlinePrice:book.price} RSD
+                i.addWishList.fa-heart.top-book-heart(data-title=`${book.title}` data-author=`${book.author}` data-image=`${book.img}` data-price=`${book.price}` data-online-price=`${book.onlinePrice}` data-source=`${source}` data-url=`${book.url}` class=`${(user && user.wishListSet.has(book.url))?'fas':'far'}`) 
 
 block content
     .page-wrapper
@@ -22,6 +23,6 @@ block content
                     i.fas.fa-chevron-right.next
                     .post-wrapper
                         each book in src.books
-                            +result(book)
+                            +result(book, src.source)
 
             

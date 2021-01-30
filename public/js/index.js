@@ -1,9 +1,9 @@
 import '@babel/polyfill';
 import '../js/slide';
-import { showAlert } from './alert';
 import login from './login';
 import signup from './signup'
 import { addBook, removeBook } from './wishlist';
+import updateTopBooks from './updateTopBooks';
 
 /**
  * DOM 
@@ -14,6 +14,7 @@ const checkBox = document.querySelector('.filters-select');
 const signupForm = document.querySelector('.signup-form');
 const loginForm = document.querySelector('.login-form');
 const addWishList = document.querySelectorAll('.addWishList');
+const updateTopBooksBtn = document.querySelector('.update-top-books-btn');
 
 /**
  * QUERY STRING
@@ -107,5 +108,15 @@ if (addWishList.length > 0) {
                 removeBook(el);
             }
         });
+    });
+}
+
+if (updateTopBooksBtn) {
+    updateTopBooksBtn.addEventListener('click', event => {
+        event.preventDefault();
+        updateTopBooksBtn.disabled = true;
+        updateTopBooksBtn.textContent = 'Processing....'
+        const paragraphDom = document.querySelector('.updateInfo'); 
+        updateTopBooks(paragraphDom, updateTopBooksBtn);
     });
 }

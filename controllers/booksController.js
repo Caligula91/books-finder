@@ -481,7 +481,9 @@ exports.updateTopBooksDB = catchAsync(async (req, res, next) => {
         updateOne: {
           filter: { source: curr.value.source },
           update: {
-            dateModified: Date.now(),
+            $currentDate: {
+              dateModified: true,
+            },
             $set: { books: curr.value.books },
           },
           upsert: true,

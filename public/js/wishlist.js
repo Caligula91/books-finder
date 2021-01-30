@@ -1,6 +1,11 @@
 import axios from 'axios';
 import { showAlert } from './alert';
 
+const setWishListSize = (wishListSize) => {
+    const dom = document.getElementById('user-wish-list');
+    dom.textContent = `WISHLIST(${wishListSize})`;
+}
+
 export async function addBook(dom) {
     try {
         const { title, author, url, image, price, onlinePrice, source } = dom.dataset;
@@ -21,6 +26,7 @@ export async function addBook(dom) {
             showAlert(response.data.status, 'Book Added to WishList', 3000);
             dom.classList.remove('far');
             dom.classList.add('fas');
+            setWishListSize(response.data.data.wishListSize);
         }
     } catch (error) {
         if (error.response.data.message === 'Book already in Wish List') {
@@ -43,10 +49,11 @@ export async function removeBook(dom) {
                 url,
             }
         });
-        if (response.status === 204) {
+        if (response.data.status === 'success') {
             showAlert('success', 'Book Removed from WishList', 3000);
             dom.classList.remove('fas');
             dom.classList.add('far');
+            setWishListSize(response.data.data.wishListSize);
         }
     } catch (error) {
         showAlert('error', 'Failed to Remove Book from WishList', 3000);

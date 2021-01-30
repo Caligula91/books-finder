@@ -21,6 +21,13 @@ router.get(
   viewController.getWishList
 );
 
+router.get(
+  '/user/admin/update-top-books',
+  authController.protect,
+  authController.restrictTo('admin'),
+  viewController.updateTopBooks
+);
+
 /**
  * DONT THROW ERRORS
  */

@@ -1,0 +1,15 @@
+extends base
+
+block content
+    .user-page-wrapper
+        include _userSettings
+        .top-books-table-container
+            h2.page-title #{title || 'Update Top Books'}
+            table.top-books
+                each book in topBooks
+                    tr
+                        td #{book.source}
+                        td #{book.dateModified}-(#{book.books.length})
+            button.update-top-books-btn UPDATE ALL
+            p.updateInfo 
+

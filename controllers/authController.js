@@ -189,7 +189,14 @@ exports.protect = catchAsync(async (req, res, next) => {
   const user = await User.findById(decoded.id).select(
     '+passwordChangedAt +active +wishList'
   );
-  if (!user) return next(new AppError('Invalid token', 401));
+  // PURGE INVALID TOKEN
+  if (!user) {
+    res.cookie('jwt', 'blank', {
+      expires: new Date(Date.now() + 1000),
+      httpOnly: true,
+    });
+    return next(new AppError('Invalid token', 401));
+  }
   if (!user.active) return next(new AppError('User is deactivated', 401));
   if (!user.isPasswordValid(decoded.iat))
     return next(

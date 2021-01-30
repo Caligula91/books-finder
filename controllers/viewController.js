@@ -120,3 +120,14 @@ exports.getWishList = (req, res, next) => {
     title: 'WishList',
   });
 };
+
+exports.updateTopBooks = catchAsync(async (req, res, next) => {
+  const response = await axios(
+    `${req.protocol}://${req.get('host')}/api/v1/books/top-books`
+  );
+  const { topBooks } = response.data;
+  res.status(200).render('updateTopBooks', {
+    title: 'Update Top Books',
+    topBooks,
+  });
+});

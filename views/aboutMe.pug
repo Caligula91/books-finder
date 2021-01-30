@@ -3,10 +3,10 @@ extends base
 block content
     .user-page-wrapper
         include _userSettings
-        .auth-content
+        .about-me-table-container
             h2.page-title About Me
             br
-            table
+            table.about-me
                 tr
                     td Name
                     td #{user.name.split(' ')[0]}

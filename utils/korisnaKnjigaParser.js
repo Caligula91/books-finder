@@ -38,8 +38,8 @@ exports.parseBooks = (html) => {
         extended,
         part,
         source: {
-          name: 'korisna_Knjiga',
-          logo: '/img/logo/korisna_knjiga.png',
+          name: 'korisnaknjiga',
+          logo: '/img/logo/korisnaknjiga.png',
           onlinePrice: price,
           url,
           img,

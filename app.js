@@ -9,6 +9,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const compression = require('compression');
+const nocache = require('nocache');
 
 const booksRouter = require('./routes/booksRoutes');
 const viewRouter = require('./routes/viewRoutes');
@@ -61,6 +62,9 @@ app.use(xss());
 
 // Prevent parameter pollution
 app.use(hpp());
+
+// DISABLE CACHE !!!!!!!!!
+if (process.env.BROWSER_CACHE === 'no') app.use(nocache());
 
 app.use(compression());
 

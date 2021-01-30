@@ -323,6 +323,8 @@ header .menu-toggle {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  line-height: 1em;
+  min-height: 2em;
 }
 .post-info-author {
   margin: 10px 0;
@@ -340,6 +342,11 @@ header .menu-toggle {
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   font-weight: bold;
+}
+
+.top-book-heart {
+  margin-left: 20px;
+  font-size: 1.5rem;
 }
 
 /* JONAS CSS BEGIN */
@@ -467,6 +474,7 @@ tbody:before {
   display: flex;
   justify-content: center;
   margin-bottom: 50px;
+  -webkit-padding-start: 0;
 }
 .footer__pagination li {
   margin: 0px 10px;
@@ -1036,6 +1044,15 @@ form div {
   padding: 10px 10px;
 }
 
+.about-me-table-container {
+  display: block;
+  max-width: 85%;
+  margin: 0 auto;
+  padding: 50px 5px;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
 /* WISHLIST*/
 
 .wishlist-container {
@@ -1062,7 +1079,7 @@ form div {
   margin-bottom: 50px;
   margin-right: 10px;
   margin-left: 10px;
-
+  vertical-align: top;
   border-radius: 15px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   transition: 0.3s;
@@ -1084,12 +1101,14 @@ form div {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  line-height: 1em;
+  min-height: 2em;
 }
 .wish__card-info p:nth-child(2) {
   font-size: 1rem;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 .wish__card-price,
@@ -1130,4 +1149,32 @@ form div {
   border: none;
   background: none;
   cursor: pointer;
+}
+
+/* ADMIN */
+.top-books-table-container {
+  display: block;
+  max-width: 85%;
+  margin: 0 auto;
+  padding: 50px 5px;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.top-books {
+  margin: 10px 10px;
+  border-collapse: collapse;
+}
+
+.top-books td {
+  text-align: center;
+  border: 1px solid black;
+  width: 300px;
+}
+.top-books td:nth-child(1) {
+  width: 100px;
+}
+
+.update-top-books {
+  margin: 10px 10px;
 }
