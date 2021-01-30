@@ -8663,6 +8663,16 @@ var setWishListSize = function setWishListSize(wishListSize) {
   dom.textContent = "WISHLIST(".concat(wishListSize, ")");
 };
 
+var addHeart = function addHeart(dom) {
+  dom.classList.remove('far');
+  dom.classList.add('fas');
+};
+
+var removeHeart = function removeHeart(dom) {
+  dom.classList.remove('fas');
+  dom.classList.add('far');
+};
+
 function addBook(_x) {
   return _addBook.apply(this, arguments);
 }
@@ -8676,8 +8686,9 @@ function _addBook() {
         switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
+            addHeart(dom);
             _dom$dataset = dom.dataset, title = _dom$dataset.title, author = _dom$dataset.author, url = _dom$dataset.url, image = _dom$dataset.image, price = _dom$dataset.price, onlinePrice = _dom$dataset.onlinePrice, source = _dom$dataset.source;
-            _context.next = 4;
+            _context.next = 5;
             return (0, _axios.default)({
               method: 'POST',
               url: '/api/v1/users/wishbook',
@@ -8692,37 +8703,34 @@ function _addBook() {
               }
             });
 
-          case 4:
+          case 5:
             response = _context.sent;
 
             if (response.data.status === 'success') {
               (0, _alert.showAlert)(response.data.status, 'Book Added to WishList', 3000);
-              dom.classList.remove('far');
-              dom.classList.add('fas');
               setWishListSize(response.data.data.wishListSize);
             }
 
-            _context.next = 11;
+            _context.next = 12;
             break;
 
-          case 8:
-            _context.prev = 8;
+          case 9:
+            _context.prev = 9;
             _context.t0 = _context["catch"](0);
 
             if (_context.t0.response.data.message === 'Book already in Wish List') {
               (0, _alert.showAlert)('success', _context.t0.response.data.message, 300);
-              dom.classList.remove('far');
-              dom.classList.add('fas');
             } else {
               (0, _alert.showAlert)('error', _context.t0.response.data.message, 3000);
+              removeHeart(dom);
             }
 
-          case 11:
+          case 12:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 8]]);
+    }, _callee, null, [[0, 9]]);
   }));
   return _addBook.apply(this, arguments);
 }
@@ -8739,8 +8747,9 @@ function _removeBook() {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.prev = 0;
+            removeHeart(dom);
             url = dom.dataset.url;
-            _context2.next = 4;
+            _context2.next = 5;
             return (0, _axios.default)({
               method: 'DELETE',
               url: '/api/v1/users/wishbook',
@@ -8749,30 +8758,29 @@ function _removeBook() {
               }
             });
 
-          case 4:
+          case 5:
             response = _context2.sent;
 
             if (response.data.status === 'success') {
               (0, _alert.showAlert)('success', 'Book Removed from WishList', 3000);
-              dom.classList.remove('fas');
-              dom.classList.add('far');
               setWishListSize(response.data.data.wishListSize);
             }
 
-            _context2.next = 11;
+            _context2.next = 13;
             break;
 
-          case 8:
-            _context2.prev = 8;
+          case 9:
+            _context2.prev = 9;
             _context2.t0 = _context2["catch"](0);
             (0, _alert.showAlert)('error', 'Failed to Remove Book from WishList', 3000);
+            addHeart(dom);
 
-          case 11:
+          case 13:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[0, 8]]);
+    }, _callee2, null, [[0, 9]]);
   }));
   return _removeBook.apply(this, arguments);
 }
@@ -9215,19 +9223,21 @@ if (loginForm) {
 }
 
 if (addWishList.length > 0) {
-  // .far = empty heart; .fas = full heart
-  addWishList.forEach(function (el) {
-    el.addEventListener('click', function (event) {
+  var likeHandler = function likeHandler(event) {
+    if (event.target.classList.contains('addWishList')) {
       event.preventDefault();
 
-      if (el.classList.contains('far')) {
-        // Add to wish list and alert
-        (0, _wishlist.addBook)(el);
-      } else if (el.classList.contains('fas')) {
-        (0, _wishlist.removeBook)(el);
+      if (event.target.classList.contains('far')) {
+        event.preventDefault();
+        (0, _wishlist.addBook)(event.target);
+      } else if (event.target.classList.contains('fas')) {
+        event.preventDefault();
+        (0, _wishlist.removeBook)(event.target);
       }
-    });
-  });
+    }
+  };
+
+  document.body.addEventListener('click', likeHandler);
 }
 
 if (updateTopBooksBtn) {
@@ -9267,7 +9277,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56421" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52951" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -97,18 +97,19 @@ if (loginForm) {
 }
 
 if (addWishList.length > 0) {
-    // .far = empty heart; .fas = full heart
-    addWishList.forEach(el => {
-        el.addEventListener('click', (event) => {
+    const likeHandler = (event) => {
+        if (event.target.classList.contains('addWishList')) {
             event.preventDefault();
-            if (el.classList.contains('far')) {
-                // Add to wish list and alert
-                addBook(el);
-            } else if (el.classList.contains('fas')) {
-                removeBook(el);
+            if (event.target.classList.contains('far')) {
+                event.preventDefault();
+                addBook(event.target);
+            } else if (event.target.classList.contains('fas')) {
+                event.preventDefault();
+                removeBook(event.target);
             }
-        });
-    });
+        }
+    }
+    document.body.addEventListener('click', likeHandler);
 }
 
 if (updateTopBooksBtn) {
