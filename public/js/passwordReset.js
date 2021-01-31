@@ -3,7 +3,7 @@ import { showAlert } from './alert';
 
 const displayEmailSent = (email) => {
     const authContent = document.querySelector('.auth-content');
-    authContent.insertAdjacentHTML('beforebegin', `<h2 style="height: 40vh; text-align: center; padding-top: 100px">Email sent to ${email}, check your inbox!</h2>`);
+    authContent.insertAdjacentHTML('beforebegin', `<h2 style="height: 40vh; text-align: center; padding-top: 100px">Email sent to ${email}, check your inbox!<br/>Check Spam Folder!</h2>`);
     authContent.style.display = 'none';
 }
 
@@ -17,7 +17,7 @@ export const sendEmail = async (email, button) => {
             },
         });
         if (response.data.status === 'success') {
-            showAlert(response.data.status, `Email sent to ${email}, check yout inbox`);
+            showAlert(response.data.status, `Email sent to ${email}, check your inbox`);
             displayEmailSent(email);
         }
     } catch (error) {

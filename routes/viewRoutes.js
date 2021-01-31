@@ -38,7 +38,7 @@ router.get('/', viewController.getOverview);
 router.get('/logout', viewController.logout);
 
 /**
- * REDIRECT HOME IF NOT LOGGED IN
+ * REDIRECT HOME IF NOT LOGGED IN (ONLY WORKS WHEN SAME SERVER FOR API AND SITE !!!)
  */
 
 router.get('/signup', viewController.redirectHome, viewController.signup);
