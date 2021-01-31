@@ -7,7 +7,7 @@
       .contact
         span
           i.fas.fa-phone
-          |  &nbsp; +38164509090
+          |  &nbsp; +381645090908
         span
           i.fas.fa-envelope
           |  &nbsp; nanica71@gmail.com
@@ -35,9 +35,9 @@
     .footer-section.contact-form
       h2 Contact me
       br
-      form(action='index.html' method='post')
-        input.text-input.contact-input(type='email' name='email' placeholder='Your email address...')
-        textarea.text-input.contact-input(rows='4' name='message' placeholder='Your message...')
+      form.contact-form
+        input.text-input.contact-input(type='email' name='email' placeholder='Your email address...' required)
+        textarea.text-input.contact-input(rows='4' name='message' placeholder='Your message...' required)
         button.btn.btn-big.contact-btn(type='submit')
           i.fas.fa-envelope
           |             Send

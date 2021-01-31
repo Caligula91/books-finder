@@ -8,6 +8,7 @@ router.post('/signup', authController.signUp);
 router.post('/login', authController.logIn);
 router.post('/password-forgot', authController.forgotPassword);
 router.patch('/password-reset/:token', authController.resetPassword);
+router.post('/contact/send-message', userController.sendContactMessage);
 
 /**
  * PROTECTED ROUTES

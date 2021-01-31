@@ -131,3 +131,10 @@ exports.updateTopBooks = catchAsync(async (req, res, next) => {
     topBooks,
   });
 });
+
+exports.resetPassword = (req, res, next) => {
+  res.status(200).render('resetPassword', {
+    title: 'Reset Password',
+    token: req.params.token,
+  });
+};

@@ -1,5 +1,6 @@
 const AppError = require('../utils/appError');
 const User = require('../models/User');
+const ContactMessage = require('../models/contactMessage');
 const catchAsync = require('../utils/catchAsync');
 
 exports.getMe = (req, res, next) => {
@@ -206,4 +207,14 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
       },
     });
   }
+});
+
+exports.sendContactMessage = catchAsync(async (req, res, next) => {
+  const contactMessage = await ContactMessage.create(req.body);
+  res.status(201).json({
+    status: 'success',
+    data: {
+      contactMessage,
+    },
+  });
 });

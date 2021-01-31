@@ -40,12 +40,18 @@ router.get('/logout', viewController.logout);
 /**
  * REDIRECT HOME IF NOT LOGGED IN
  */
+
 router.get('/signup', viewController.redirectHome, viewController.signup);
 router.get('/login', viewController.redirectHome, viewController.login);
 router.get(
   '/login/forgot-password',
   viewController.redirectHome,
   viewController.forgotPassword
+);
+router.get(
+  '/user/reset-password/:token',
+  viewController.redirectHome,
+  viewController.resetPassword
 );
 
 module.exports = router;

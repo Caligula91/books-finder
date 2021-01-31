@@ -4,10 +4,13 @@ import login from './login';
 import signup from './signup'
 import { addBook, removeBook } from './wishlist';
 import updateTopBooks from './updateTopBooks';
+import  sendContactMessage  from './sendContactMessage';
+import * as passwordReset from './passwordReset';
 
 /**
  * DOM 
  */
+const contactForm = document.querySelector('.contact-form');
 const searchForm = document.querySelector('.search-form');
 const selectOptions = document.getElementById('per_page');
 const checkBox = document.querySelector('.filters-select');
@@ -15,6 +18,8 @@ const signupForm = document.querySelector('.signup-form');
 const loginForm = document.querySelector('.login-form');
 const addWishList = document.querySelectorAll('.addWishList');
 const updateTopBooksBtn = document.querySelector('.update-top-books-btn');
+const passwordForgotForm = document.querySelector('.password-forgot-form');
+const passwordResetForm = document.querySelector('.password-reset-form');
 
 /**
  * QUERY STRING
@@ -25,6 +30,18 @@ const urlParams = new URLSearchParams(queryString);
 /**
  * DELEGATION
  */
+if (contactForm) {
+    contactForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const btn = contactForm.querySelector('.contact-btn');
+        btn.textContent = 'Sending...';
+        btn.disabled = true;
+        const email = contactForm.querySelector('input[name="email"]').value.trim();
+        const message = contactForm.querySelector('textarea[name="message"]').value.trim();
+        sendContactMessage({ email, message }, btn, contactForm);
+    })
+}
+
 if (selectOptions) {
     if (urlParams.has('limit')) {
         const limits = [12, 24, 36, 48];
@@ -117,7 +134,36 @@ if (updateTopBooksBtn) {
         event.preventDefault();
         updateTopBooksBtn.disabled = true;
         updateTopBooksBtn.textContent = 'Processing....'
-        const paragraphDom = document.querySelector('.updateInfo'); 
+        const paragraphDom = document.querySelector('.top-books-update-info'); 
         updateTopBooks(paragraphDom, updateTopBooksBtn);
+    });
+}
+
+if (passwordForgotForm) {
+    passwordForgotForm.addEventListener('submit', event => {
+        const sendBtn = passwordForgotForm.querySelector('.send-btn');
+        sendBtn.textContent = 'Sending...';
+        sendBtn.disabled = true;
+        event.preventDefault();
+        const email = passwordForgotForm.querySelector('input[name="email"]').value.trim().toLowerCase();
+        passwordReset.sendEmail(email, sendBtn);
+    });
+}
+
+if (passwordResetForm) {
+    passwordResetForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const resetBtn = passwordResetForm.querySelector('.reset-password-btn');
+        resetBtn.textContent = 'Processing...';
+        resetBtn.disabled = true;
+        const password = passwordResetForm.querySelector('input[name="password"]').value.trim();
+        const passwordConfirm = passwordResetForm.querySelector('input[name="passwordConfirm"]').value.trim();
+        const token = passwordResetForm.dataset.token;
+        passwordReset.resetPassword({ password, passwordConfirm }, token, resetBtn, passwordResetForm);
+    });
+    passwordResetForm.querySelectorAll('input').forEach(el => {
+        el.addEventListener('focus', e => {
+            e.target.style.border = '';
+        });
     });
 }

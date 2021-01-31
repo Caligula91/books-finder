@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const catchAsync = require('../utils/catchAsync');
 const User = require('../models/User');
 const AppError = require('../utils/appError');
-const sendEmail = require('../utils/email');
+const Email = require('../utils/email');
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -114,25 +114,17 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   );
   const url = `${req.protocol}://${req.get(
     'host'
-  )}/api/v1/users/password-reset/${resetToken}`;
+  )}/user/reset-password/${resetToken}`;
+  // 3. send password reset token to the user (nodemail)
   try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Password Reset',
-      message: url,
-    });
+    await new Email(user, url).sendPasswordReset();
   } catch (error) {
-    await user.updateOne(
-      {
-        $unset: {
-          passwordResetToken: undefined,
-          passwordResetExpires: undefined,
-        },
+    await user.updateOne({
+      $unset: {
+        passwordResetToken: undefined,
+        passwordResetExpires: undefined,
       },
-      {
-        runValidators: false,
-      }
-    );
+    });
     return next(error);
   }
   res.status(200).json({
