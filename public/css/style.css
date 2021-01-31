@@ -516,8 +516,8 @@ tbody:before {
 }
 @media only screen and (max-width: 600px) {
   .alert {
-    padding: 0 0;
-    font-size: 0.8;
+    padding: 5px 5px;
+    font-size: 0.8rem;
   }
 }
 
@@ -848,7 +848,7 @@ tbody:before {
   }
 
   .filters {
-    padding-left: 50px;
+    padding-left: 30px;
   }
   .card-container {
     padding: 100px 50px;

@@ -41,7 +41,14 @@ exports.signUp = catchAsync(async (req, res, next) => {
   const { name, password, passwordConfirm, email } = req.body;
   const user = await User.create({ name, password, passwordConfirm, email });
   user.password = undefined;
-  sendResponseWithToken(user, res, 201);
+  const url = `${req.protocol}://${req.get('host')}`;
+  try {
+    await new Email(user, url).sendWelcome();
+  } catch (error) {
+    console.log(`EMAIL TO ${user.email} DIDNT SEND`);
+  } finally {
+    sendResponseWithToken(user, res, 201);
+  }
 });
 
 exports.logIn = catchAsync(async (req, res, next) => {
