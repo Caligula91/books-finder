@@ -80,6 +80,7 @@ a {
   line-height: 1.5rem;
   font-size: 1.2em;
   font-family: 'Lora', serif;
+  box-sizing: border-box;
 }
 
 .msg {
@@ -689,11 +690,13 @@ tbody:before {
 }
 .text-input:focus {
   outline: none;
-  border: 3px solid #e0e0e0;
-  border-bottom: 3px solid #55c57a;
+  box-shadow: 0 5px 2px -2px #55c57a;
+  /* border: 3px solid #e0e0e0;
+  border-bottom: 3px solid #55c57a; */
 }
 .text-input:focus:invalid {
-  border-bottom: 3px solid #ff7730;
+  box-shadow: 0 5px 2px -2px #ff7730;
+  /* border-bottom: 3px solid #ff7730; */
 }
 .auth-errors {
   font-family: 'Lora', serif;
