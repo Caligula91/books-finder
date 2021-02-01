@@ -1,0 +1,11 @@
+extends base
+
+block content
+    .page-wrapper(style="text-align: center; padding: 100px 20px")
+        h1 Knjigomanija
+        p(style="padding-top: 50px; font-size: 1.2rem")
+            | Pretrazivac knjiga na sajtovima za prodaju knjiga. Za sada obavlja pretrage na delfi.rs, knjizare-vulkan.rs, evrobook.rs korisnaknjiga.com. Rezultate pretraga analizira i prepoznaje knjige koje su iste, a dolaze sa razlicitih satjova, zatim vrsi sortiranje i izbacuje tabelarni prikaz cena. Postoji mogucnost kreiranja akaunta, i dodavanja knjiga u listu zelja. Vrsi pamcenje prepoznatih istih knjiga i belezi ih u bazi podataka radi boljih performansi prilikom svakog sledeceg pretrazivanja. Servis koji koristim za slanje mailova je SendGrid.
+            br
+            br
+            | Aplikacija je hostovana na Heroku (Free Dynos)
+        p(style="padding-top: 50px; font-size: 1.2rem") Tehnologije: Node.js, Express.js, Mongoose, Pug

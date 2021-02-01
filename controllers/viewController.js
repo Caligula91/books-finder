@@ -55,6 +55,16 @@ exports.getSearchBooks = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.aboutCreator = (req, res, next) => {
+  res.status(200).render('aboutCreator', {
+    title: 'Author',
+  });
+};
+exports.aboutProject = (req, res, next) => {
+  res.status(200).render('aboutProject', {
+    title: 'Project',
+  });
+};
 /**
  * REDIRECT HOME
  */
@@ -86,6 +96,17 @@ exports.logout = (req, res, next) => {
     res.locals.user = undefined;
   }
   res.redirect('/');
+};
+
+exports.getSinceDate = (req, res, next) => {
+  try {
+    res.locals.user.since = res.locals.user.accountCreated
+      .toISOString()
+      .slice(0, 10);
+  } catch (error) {
+    next();
+  }
+  next();
 };
 
 exports.getMe = (req, res, next) => {

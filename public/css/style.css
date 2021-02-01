@@ -745,6 +745,7 @@ tbody:before {
   font-size: 1.3em;
   border-radius: 5px;
   transition: all 0.3s;
+  margin-right: 15px;
 }
 
 .footer .footer-content .about .socials a:hover {
@@ -758,6 +759,7 @@ tbody:before {
   margin-bottom: 10px;
   font-size: 1.2em;
   transition: all 0.3s;
+  width: 60%;
 }
 
 .footer .footer-content .links ul a:hover {

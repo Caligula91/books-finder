@@ -6,7 +6,13 @@ const router = express.Router();
 
 // (ONLY WORKS WHEN SAME SERVER FOR API AND SITE !!!)
 
-router.get('/user', authController.protect, viewController.getMe);
+// THROW ERRORS PROTECTED ROUTES
+router.get(
+  '/user',
+  authController.protect,
+  viewController.getSinceDate,
+  viewController.getMe
+);
 router.get(
   '/user/update-name',
   authController.protect,
@@ -29,6 +35,9 @@ router.get(
   authController.restrictTo('admin'),
   viewController.updateTopBooks
 );
+
+router.get('/about-creator', viewController.aboutCreator);
+router.get('/about-project', viewController.aboutProject);
 
 /**
  * DONT THROW ERRORS

@@ -8,8 +8,8 @@ block content
             br
             table.about-me
                 tr
-                    td Name
-                    td #{user.name.split(' ')[0]}
+                    td Name:
+                    td #{user.name}
                 tr
                     td Email: 
                     td #{user.email}
@@ -18,4 +18,4 @@ block content
                     td #{user.role}
                 tr
                     td Since:
-                    td #{user.accountCreated.toISOString().slice(0,10)}
+                    td #{user.since}
