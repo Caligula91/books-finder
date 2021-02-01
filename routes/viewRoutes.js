@@ -4,6 +4,8 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
+// (ONLY WORKS WHEN SAME SERVER FOR API AND SITE !!!)
+
 router.get('/user', authController.protect, viewController.getMe);
 router.get(
   '/user/update-name',
@@ -38,7 +40,7 @@ router.get('/', viewController.getOverview);
 router.get('/logout', viewController.logout);
 
 /**
- * REDIRECT HOME IF NOT LOGGED IN (ONLY WORKS WHEN SAME SERVER FOR API AND SITE !!!)
+ * REDIRECT HOME IF NOT LOGGED IN
  */
 
 router.get('/signup', viewController.redirectHome, viewController.signup);

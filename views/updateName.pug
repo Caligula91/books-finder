@@ -4,17 +4,17 @@ block content
     .user-page-wrapper
         include _userSettings
         .auth-content
-            label.auth-errors
-            form.update-form
+            form.update-user-form
                 h2.form-title #{title || 'Update Name'}
                 br
                 br
                 br
+                label.auth-errors
                 div
-                    label Name: #{user.name}
+                    label.user-current-name Name: #{user.name}
                 br
                 div
                     label New Name
                     input.text-input(type='text' name='name' required)
                 div
-                    button.btn.btn-big.update-btn Change Name
+                    button.btn.btn-big.update-user-btn Change Name

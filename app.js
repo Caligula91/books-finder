@@ -10,6 +10,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const compression = require('compression');
 const nocache = require('nocache');
+const enforce = require('express-sslify');
 
 const booksRouter = require('./routes/booksRoutes');
 const viewRouter = require('./routes/viewRoutes');
@@ -21,6 +22,7 @@ const app = express();
 
 app.enable('trust proxy');
 
+if (process.env.ENFORCE_SECURE === 'yes') app.use(enforce.HTTPS());
 /**
  *  1) GLOBAL MIDDLEWARES
  */

@@ -6,6 +6,7 @@ import { addBook, removeBook } from './wishlist';
 import updateTopBooks from './updateTopBooks';
 import  sendContactMessage  from './sendContactMessage';
 import * as passwordReset from './passwordReset';
+import * as updateUser from './updateUser';
 
 /**
  * DOM 
@@ -20,6 +21,8 @@ const addWishList = document.querySelectorAll('.addWishList');
 const updateTopBooksBtn = document.querySelector('.update-top-books-btn');
 const passwordForgotForm = document.querySelector('.password-forgot-form');
 const passwordResetForm = document.querySelector('.password-reset-form');
+const updateUserForm = document.querySelector('.update-user-form');
+const updatePasswordForm = document.querySelector('.update-password-form');
 
 /**
  * QUERY STRING
@@ -165,5 +168,39 @@ if (passwordResetForm) {
         el.addEventListener('focus', e => {
             e.target.style.border = '';
         });
+    });
+}
+
+if (updateUserForm) {
+    updateUserForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const updateBtn = updateUserForm.querySelector('.update-user-btn');
+        updateBtn.textContent = 'Processing...';
+        updateBtn.disabled = true;
+        const name = updateUserForm.querySelector('input[name="name"]').value.trim();
+        updateUser.updateName({name}, updateBtn, updateUserForm);
+    });
+    updateUserForm.querySelectorAll('input').forEach(el => {
+        el.addEventListener('focus', e => {
+            e.target.style.border = '';
+        })
+    });
+}
+
+if (updatePasswordForm) {
+    updatePasswordForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const updateBtn = updatePasswordForm.querySelector('.update-password-btn');
+        updateBtn.textContent = 'Processing...';
+        updateBtn.disabled = true;
+        const currentPassword = updatePasswordForm.querySelector('input[name="currentPassword"]').value.trim();
+        const newPassword = updatePasswordForm.querySelector('input[name="password"]').value.trim();
+        const newPasswordConfirm = updatePasswordForm.querySelector('input[name="passwordConfirm"]').value.trim();
+        updateUser.updatePassword({ currentPassword, newPassword, newPasswordConfirm }, updateBtn, updatePasswordForm);
+    });
+    updatePasswordForm.querySelectorAll('input').forEach(el => {
+        el.addEventListener('focus', e => {
+            e.target.style.border = '';
+        })
     });
 }
