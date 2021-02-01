@@ -22,7 +22,8 @@ const app = express();
 
 app.enable('trust proxy');
 
-if (process.env.ENFORCE_SECURE === 'yes') app.use(enforce.HTTPS());
+if (process.env.ENFORCE_SECURE === 'yes')
+  app.use(enforce.HTTPS({ trustProtoHeader: true }));
 /**
  *  1) GLOBAL MIDDLEWARES
  */

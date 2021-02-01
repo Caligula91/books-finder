@@ -452,7 +452,7 @@ header .menu-toggle {
   padding-bottom: 5%;
   max-height: 100%;
   max-width: 100%;
-  display: block;
+  /* display: block; */
 }
 
 .content-table tbody tr:nth-of-type(even) {
