@@ -23,7 +23,7 @@ export const sendEmail = async (email, button) => {
     } catch (error) {
         // HIDE FROM USER IF EMAIL EXISTS OR NOT
         if (error.response.data.message === 'There is no user with given email') {
-            showAlert(`Email sent to ${email}, check yout inbox`);
+            showAlert(`Email sent to ${email}, check your inbox`);
             displayEmailSent(email);
         } else {
             showAlert('error', 'Problem with sending email, please try again');

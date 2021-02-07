@@ -57,6 +57,7 @@ const handleJWTError = () => {
     401
   );
 };
+
 const handleJWTExpiredError = () => {
   return new AppError('Token expired, please login again', 401);
 };
@@ -64,6 +65,7 @@ const handleJWTExpiredError = () => {
 const handleCastErrorDB = (err) => {
   return new AppError(`Invalid ${err.path}: ${err.value}`, 400);
 };
+
 const handleDuplicateFieldsDB = (err) => {
   const problemFields = {};
   let message = '';
@@ -75,6 +77,7 @@ const handleDuplicateFieldsDB = (err) => {
   error.problemFields = problemFields;
   return error;
 };
+
 const handleValidationErrorDB = (err) => {
   const problemFields = {};
   Object.entries(err.errors).forEach(([key, value]) => {

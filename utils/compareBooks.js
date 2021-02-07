@@ -2,164 +2,160 @@ const slugify = require('slugify');
 const HTMLParser = require('node-html-parser');
 const stringSimilarity = require('string-similarity');
 
-const getDetailsObject = (() => {
-  return {
-    delfi: (html) => {
-      let publisher;
-      let povez = 'mek';
-      let pages;
-      try {
-        const dom = HTMLParser.parse(html);
-        publisher = slugify(
-          dom.querySelectorAll('.author')[1].querySelector('a').innerText,
-          { lower: true }
-        );
-        const domIndex = dom
-          .querySelector('.tab-pane.podaci')
-          .querySelector('.col-left')
-          .querySelectorAll('p');
-        let povezIndex = -1;
-        let pagesIndex = -1;
-        domIndex.forEach((el, index) => {
-          if (el.innerText.trim().toLowerCase().startsWith('povez'))
-            povezIndex = index;
-          if (el.innerText.trim().toLowerCase().startsWith('broj strana'))
-            pagesIndex = index;
+const getDetailsObject = {
+  delfi: (html) => {
+    let publisher;
+    let povez = 'mek';
+    let pages;
+    try {
+      const dom = HTMLParser.parse(html);
+      publisher = slugify(
+        dom.querySelectorAll('.author')[1].querySelector('a').innerText,
+        { lower: true }
+      );
+      const domIndex = dom
+        .querySelector('.tab-pane.podaci')
+        .querySelector('.col-left')
+        .querySelectorAll('p');
+      let povezIndex = -1;
+      let pagesIndex = -1;
+      domIndex.forEach((el, index) => {
+        if (el.innerText.trim().toLowerCase().startsWith('povez'))
+          povezIndex = index;
+        if (el.innerText.trim().toLowerCase().startsWith('broj strana'))
+          pagesIndex = index;
+      });
+      const domDetails = dom
+        .querySelector('.tab-pane.podaci')
+        .querySelector('.col-right')
+        .querySelectorAll('p');
+      if (povezIndex !== -1) {
+        povez = slugify(domDetails[povezIndex].innerText, { lower: true });
+        povez = povez.startsWith('bros') ? 'mek' : povez;
+      }
+      if (pagesIndex !== -1)
+        pages = parseInt(domDetails[pagesIndex].innerText, 10);
+      return {
+        publisher,
+        povez,
+        pages,
+      };
+    } catch (error) {
+      // LOG SOMEWHERE URL AND VARIABLES
+      return {
+        publisher,
+        povez,
+        pages,
+      };
+    }
+  },
+  vulkan: (html) => {
+    let publisher;
+    let povez = 'mek';
+    let pages;
+    try {
+      const dom = HTMLParser.parse(html);
+      const domPublisher = dom
+        .querySelector('.atributs-wrapper.chosen-atributes')
+        .querySelector('.value a');
+      publisher = slugify(domPublisher.innerText, { lower: true });
+      const domDetails = dom.querySelector('#tab_product_specification');
+      const domPovez = dom.querySelector('.attr-povez');
+      if (domPovez) {
+        povez = slugify(domPovez.querySelectorAll('td')[1].innerText, {
+          lower: true,
         });
-        const domDetails = dom
-          .querySelector('.tab-pane.podaci')
-          .querySelector('.col-right')
-          .querySelectorAll('p');
-        if (povezIndex !== -1) {
-          povez = slugify(domDetails[povezIndex].innerText, { lower: true });
-          povez = povez.startsWith('bros') ? 'mek' : povez;
-        }
-        if (pagesIndex !== -1)
-          pages = parseInt(domDetails[pagesIndex].innerText, 10);
-        return {
-          publisher,
-          povez,
-          pages,
-        };
-      } catch (error) {
-        // LOG SOMEWHERE URL AND VARIABLES
-        return {
-          publisher,
-          povez,
-          pages,
-        };
+        povez = povez.startsWith('bros') ? 'mek' : povez;
       }
-    },
-    vulkan: (html) => {
-      let publisher;
-      let povez = 'mek';
-      let pages;
-      try {
-        const dom = HTMLParser.parse(html);
-        const domPublisher = dom
-          .querySelector('.atributs-wrapper.chosen-atributes')
-          .querySelector('.value a');
-        publisher = slugify(domPublisher.innerText, { lower: true });
-        const domDetails = dom.querySelector('#tab_product_specification');
-        const domPovez = dom.querySelector('.attr-povez');
-        if (domPovez) {
-          povez = slugify(domPovez.querySelectorAll('td')[1].innerText, {
-            lower: true,
-          });
-          povez = povez.startsWith('bros') ? 'mek' : povez;
+      const domPages = domDetails.querySelector('tbody').querySelectorAll('tr');
+      // eslint-disable-next-line no-plusplus
+      for (let i = domPages.length - 1; i >= 0; i--) {
+        const temp = domPages[i].querySelectorAll('td');
+        if (temp[0].innerText.trim().toLowerCase() === 'strana') {
+          pages = parseInt(temp[1].innerText, 10);
+          break;
         }
-        const domPages = domDetails
-          .querySelector('tbody')
-          .querySelectorAll('tr');
-        // eslint-disable-next-line no-plusplus
-        for (let i = domPages.length - 1; i >= 0; i--) {
-          const temp = domPages[i].querySelectorAll('td');
-          if (temp[0].innerText.trim().toLowerCase() === 'strana') {
-            pages = parseInt(temp[1].innerText, 10);
-            break;
+      }
+      return {
+        publisher,
+        povez,
+        pages,
+      };
+    } catch (error) {
+      // LOG SOMEWHERE URL AND VARIABLES
+      return {
+        publisher,
+        povez,
+        pages,
+      };
+    }
+  },
+  korisna_knjiga: (html) => {
+    let publisher;
+    let povez = 'mek';
+    let pages;
+    try {
+      const dom = HTMLParser.parse(html);
+      const domData = dom
+        .querySelector('.override-opis-knjige')
+        .querySelectorAll('p');
+      if (domData) {
+        domData.forEach((el) => {
+          if (el.getAttribute('title').toLowerCase() === 'brosiran') {
+            povez = slugify(el.innerText, { lower: true });
+            povez = povez.split('-')[1];
+            povez = povez.startsWith('bros') ? 'mek' : povez;
+          } else if (el.getAttribute('title').toLowerCase() === 'izdavac') {
+            publisher = slugify(el.querySelector('a').innerText, {
+              lower: true,
+            });
+          } else if (el.getAttribute('title').toLowerCase() === 'br.strana') {
+            pages = parseInt(el.innerText.slice(11), 10);
           }
-        }
-        return {
-          publisher,
-          povez,
-          pages,
-        };
-      } catch (error) {
-        // LOG SOMEWHERE URL AND VARIABLES
-        return {
-          publisher,
-          povez,
-          pages,
-        };
+        });
       }
-    },
-    korisna_knjiga: (html) => {
-      let publisher;
-      let povez = 'mek';
-      let pages;
-      try {
-        const dom = HTMLParser.parse(html);
-        const domData = dom
-          .querySelector('.override-opis-knjige')
-          .querySelectorAll('p');
-        if (domData) {
-          domData.forEach((el) => {
-            if (el.getAttribute('title').toLowerCase() === 'brosiran') {
-              povez = slugify(el.innerText, { lower: true });
-              povez = povez.split('-')[1];
-              povez = povez.startsWith('bros') ? 'mek' : povez;
-            } else if (el.getAttribute('title').toLowerCase() === 'izdavac') {
-              publisher = slugify(el.querySelector('a').innerText, {
-                lower: true,
-              });
-            } else if (el.getAttribute('title').toLowerCase() === 'br.strana') {
-              pages = parseInt(el.innerText.slice(11), 10);
-            }
-          });
-        }
-        return {
-          publisher,
-          povez,
-          pages,
-        };
-      } catch (error) {
-        // LOG SOMEWHERE URL AND VARIABLES
-        return {
-          publisher,
-          povez,
-          pages,
-        };
-      }
-    },
-    evrobook: (html) => {
-      let povez = 'mek';
-      let pages;
-      try {
-        const dom = HTMLParser.parse(html);
-        const domDetails = dom.querySelector('ul.product-bullets');
-        const rawPovez = domDetails
-          ? domDetails.querySelectorAll('li')[2].innerText.trim().toLowerCase()
-          : undefined;
-        povez = rawPovez ? slugify(rawPovez.slice(7), { lower: true }) : povez;
-        const rawPages = domDetails
-          ? domDetails.querySelectorAll('li')[0].innerText.trim()
-          : undefined;
-        pages = rawPages ? parseInt(rawPages.slice(13), 10) : 0;
-        return {
-          publisher: 'evro-book',
-          povez: povez === 'bros' ? 'mek' : povez,
-          pages,
-        };
-      } catch (error) {
-        return {
-          publisher: 'evro-book',
-          povez: povez === 'bros' ? 'mek' : povez,
-          pages,
-        };
-      }
-    },
-  };
-})();
+      return {
+        publisher,
+        povez,
+        pages,
+      };
+    } catch (error) {
+      // LOG SOMEWHERE URL AND VARIABLES
+      return {
+        publisher,
+        povez,
+        pages,
+      };
+    }
+  },
+  evrobook: (html) => {
+    let povez = 'mek';
+    let pages;
+    try {
+      const dom = HTMLParser.parse(html);
+      const domDetails = dom.querySelector('ul.product-bullets');
+      const rawPovez = domDetails
+        ? domDetails.querySelectorAll('li')[2].innerText.trim().toLowerCase()
+        : undefined;
+      povez = rawPovez ? slugify(rawPovez.slice(7), { lower: true }) : povez;
+      const rawPages = domDetails
+        ? domDetails.querySelectorAll('li')[0].innerText.trim()
+        : undefined;
+      pages = rawPages ? parseInt(rawPages.slice(13), 10) : 0;
+      return {
+        publisher: 'evro-book',
+        povez: povez === 'bros' ? 'mek' : povez,
+        pages,
+      };
+    } catch (error) {
+      return {
+        publisher: 'evro-book',
+        povez: povez === 'bros' ? 'mek' : povez,
+        pages,
+      };
+    }
+  },
+};
 
 const samePovez = (povez1, povez2) => {
   if (povez1.length === povez2.length) return povez1 === povez2;
