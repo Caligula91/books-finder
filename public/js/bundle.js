@@ -9572,13 +9572,16 @@ if (signupForm) {
   signupForm.addEventListener('submit', function (event) {
     event.preventDefault();
     document.querySelector('.auth-errors').innerHTML = '';
+    signupForm.querySelectorAll('input').forEach(function (el) {
+      el.style.border = '';
+    });
     var searchButton = document.querySelector('.signup-btn');
     searchButton.textContent = 'Processing...';
     searchButton.disabled = true;
     var name = signupForm.querySelector('input[name="name"]').value.trim();
     var email = signupForm.querySelector('input[name="email"]').value.trim();
-    var password = signupForm.querySelector('input[name="password"]').value.trim();
-    var passwordConfirm = signupForm.querySelector('input[name="passwordConfirm"]').value.trim();
+    var password = signupForm.querySelector('input[name="password"]').value;
+    var passwordConfirm = signupForm.querySelector('input[name="passwordConfirm"]').value;
     (0, _signup.default)({
       name: name,
       email: email,
@@ -9597,10 +9600,13 @@ if (loginForm) {
   loginForm.addEventListener('submit', function (event) {
     event.preventDefault();
     document.querySelector('.auth-errors').innerHTML = '';
+    loginForm.querySelectorAll('input').forEach(function (el) {
+      el.style.border = '';
+    });
     var loginButton = document.querySelector('.login-btn');
     loginButton.textContent = 'Processing...';
     loginButton.disabled = true;
-    var password = loginForm.querySelector('input[name="password"]').value.trim();
+    var password = loginForm.querySelector('input[name="password"]').value;
     var email = loginForm.querySelector('input[name="email"]').value.trim();
     (0, _login.default)({
       email: email,
@@ -9741,7 +9747,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57892" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61212" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

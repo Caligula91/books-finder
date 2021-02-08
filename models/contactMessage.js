@@ -12,7 +12,7 @@ const contactMessageSchema = new mongoose.Schema({
     required: [true, 'Empty messages not allowed'],
   },
   dateRecieved: {
-    type: String,
+    type: Date,
     default: Date.now(),
   },
 });

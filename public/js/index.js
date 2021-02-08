@@ -82,13 +82,16 @@ if (signupForm) {
     signupForm.addEventListener('submit', (event) => {
         event.preventDefault();
         document.querySelector('.auth-errors').innerHTML = '';
+        signupForm.querySelectorAll('input').forEach(el => {
+            el.style.border = '';
+        });
         const searchButton = document.querySelector('.signup-btn');
         searchButton.textContent = 'Processing...';
         searchButton.disabled = true;
         const name = signupForm.querySelector('input[name="name"]').value.trim();
         const email = signupForm.querySelector('input[name="email"]').value.trim();
-        const password = signupForm.querySelector('input[name="password"]').value.trim();
-        const passwordConfirm = signupForm.querySelector('input[name="passwordConfirm"]').value.trim();
+        const password = signupForm.querySelector('input[name="password"]').value;
+        const passwordConfirm = signupForm.querySelector('input[name="passwordConfirm"]').value;
         signup({name, email, password, passwordConfirm}, signupForm, searchButton);
     });
     signupForm.querySelectorAll('input').forEach(el => {
@@ -102,10 +105,13 @@ if (loginForm) {
     loginForm.addEventListener('submit', (event) => {
         event.preventDefault();
         document.querySelector('.auth-errors').innerHTML = '';
+        loginForm.querySelectorAll('input').forEach(el => {
+            el.style.border = '';
+        });
         const loginButton = document.querySelector('.login-btn');
         loginButton.textContent = 'Processing...';
         loginButton.disabled = true;
-        const password = loginForm.querySelector('input[name="password"]').value.trim();
+        const password = loginForm.querySelector('input[name="password"]').value;
         const email = loginForm.querySelector('input[name="email"]').value.trim();
         login({email, password}, loginForm, loginButton);
     });
