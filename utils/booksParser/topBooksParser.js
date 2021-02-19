@@ -16,7 +16,7 @@ exports.delfiParser = (html) => {
       const bodyDOM = el.querySelector('.body');
       const title = bodyDOM.querySelector('a').innerText.trim();
       const author = bodyDOM.querySelector('p').innerText.trim();
-      const priceDOM = bodyDOM.querySelector('.price');
+      const priceDOM = el.querySelector('.price');
       const { price, onlinePrice } = priceFormater.delfiFormatPrices(priceDOM);
       books.push({
         title,
