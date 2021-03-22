@@ -36,13 +36,13 @@ router.get(
   viewController.updateTopBooks
 );
 
-router.get('/about-creator', viewController.aboutCreator);
-router.get('/about-project', viewController.aboutProject);
-
 /**
  * DONT THROW ERRORS
  */
 router.use(authController.isLoggedIn);
+
+router.get('/about-creator', viewController.aboutCreator);
+router.get('/about-project', viewController.aboutProject);
 
 router.get('/pretraga', viewController.getSearchBooks);
 router.get('/', viewController.getOverview);

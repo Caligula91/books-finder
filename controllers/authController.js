@@ -23,6 +23,7 @@ const sendResponseWithToken = (user, res, statusCode) => {
   res.status(statusCode).json({
     status: 'success',
     token,
+    tokenExpires: cookieOptions.expires,
     user,
   });
 };
