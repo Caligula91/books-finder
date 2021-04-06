@@ -55,9 +55,9 @@ exports.getSearchBooks = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.aboutCreator = (req, res, next) => {
-  res.status(200).render('aboutCreator', {
-    title: 'Author',
+exports.aboutAPI = (req, res, next) => {
+  res.status(200).render('aboutAPI', {
+    title: 'API',
   });
 };
 exports.aboutProject = (req, res, next) => {

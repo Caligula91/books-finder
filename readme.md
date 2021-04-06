@@ -1,4 +1,4 @@
-# Knjigoteka by Mihajlo Nikolic
+# books-finder by Mihajlo Nikolic
 
 REST API and server side rendered website, both on same server
 

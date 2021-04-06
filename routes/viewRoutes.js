@@ -41,7 +41,7 @@ router.get(
  */
 router.use(authController.isLoggedIn);
 
-router.get('/about-creator', viewController.aboutCreator);
+router.get('/about-api', viewController.aboutAPI);
 router.get('/about-project', viewController.aboutProject);
 
 router.get('/pretraga', viewController.getSearchBooks);
