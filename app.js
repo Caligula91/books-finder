@@ -29,11 +29,12 @@ if (process.env.ENFORCE_SECURE === 'yes')
  */
 
 // Implement CORS
-const corsOptions = {
-  credentials: true,
-  origin: 'http://localhost:4200',
-};
-app.use(cors(corsOptions));
+// const corsOptions = {
+//   credentials: true,
+//   origin: 'http://localhost:4200',
+// };
+// app.use(cors(corsOptions));
+app.use(cors());
 // Access-Control-Allow-Origin *
 // api.knjige.com, front-end knjige.com
 // app.use(cors({

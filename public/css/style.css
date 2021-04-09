@@ -771,6 +771,10 @@ tbody:before {
   transition: all 0.3s;
 }
 
+.contact-input {
+  resize: none;
+}
+
 .footer .footer-content .contact-form .contact-input {
   background: #272727;
   color: #bebdbd;
