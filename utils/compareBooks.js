@@ -221,9 +221,6 @@ exports.secondCompare = (data1, data2) => {
   const publisher2 = obj2.publisher;
   const povez2 = obj2.povez;
   const pages2 = obj2.pages;
-  console.log(samePages({ pages1, author1, slug1, pages2, author2, slug2 }));
-  console.log(samePublisher(publisher1, publisher2));
-  console.log(samePovez(povez1, povez2));
   if (!samePages({ pages1, author1, slug1, pages2, author2, slug2 }))
     return false;
   if (!samePublisher(publisher1, publisher2)) return false;

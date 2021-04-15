@@ -23,7 +23,6 @@ const isSameBook = async (data, requestMap) => {
       { url1, html1: result1.data, author1, slug1 },
       { url2, html2: result2.data, author2, slug2 }
     );
-    console.log('here');
     return same;
   } catch {
     return false;
