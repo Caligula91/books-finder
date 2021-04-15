@@ -166,9 +166,9 @@ const samePovez = (povez1, povez2) => {
 };
 
 const samePublisher = (publisher1, publisher2) => {
-  publisher1 = publisher1.replace(/knjige|knjiga|,/gi, ' ');
+  publisher1 = publisher1.replace(/knjige|knjiga|izdavastvo|izdavac|,/gi, ' ');
   publisher1 = slugify(publisher1, { lower: true });
-  publisher2 = publisher2.replace(/knjige|knjiga|,/gi, ' ');
+  publisher2 = publisher2.replace(/knjige|knjiga|izdavastvo|izdavac|,/gi, ' ');
   publisher2 = slugify(publisher2, { lower: true });
   const similarity = stringSimilarity.compareTwoStrings(publisher1, publisher2);
   return similarity >= 0.5;
@@ -221,7 +221,9 @@ exports.secondCompare = (data1, data2) => {
   const publisher2 = obj2.publisher;
   const povez2 = obj2.povez;
   const pages2 = obj2.pages;
-
+  console.log(samePages({ pages1, author1, slug1, pages2, author2, slug2 }));
+  console.log(samePublisher(publisher1, publisher2));
+  console.log(samePovez(povez1, povez2));
   if (!samePages({ pages1, author1, slug1, pages2, author2, slug2 }))
     return false;
   if (!samePublisher(publisher1, publisher2)) return false;
